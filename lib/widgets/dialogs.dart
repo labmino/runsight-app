@@ -34,7 +34,7 @@ class _ConfirmationDialogState extends State<ConfirmationDialog> {
     );
   }
 
-  dialogContent(BuildContext context) {
+  Container dialogContent(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(

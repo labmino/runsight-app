@@ -10,7 +10,7 @@ class RunController extends ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   final CookieRequest request;
-  static const String baseUrl = 'http://localhost:8080/api/v1';
+  static const String baseUrl = 'http://34.101.37.162/api/v1';
 
   RunController({required this.request});
 
@@ -29,23 +29,83 @@ class RunController extends ChangeNotifier {
       final url = '$baseUrl/mobile/runs';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
-        final List<dynamic> runsData = response['data'] ?? [];
-        _runs = runsData.map((run) => Run.fromJson(run)).toList();
-        _runs.sort((a, b) => b.startedAt.compareTo(a.startedAt));
-        _currentRun = _runs.isNotEmpty && _runs.first.endedAt == null
-            ? _runs.first
-            : null;
+      // Debug: Print response to understand its structure
+      print('RunController - Response type: ${response.runtimeType}');
+      print('RunController - Response: $response');
 
-        _isLoading = false;
-        notifyListeners();
-      } else {
-        _errorMessage = response['message'] ?? 'Failed to fetch runs';
-        _isLoading = false;
-        notifyListeners();
+      // Handle different response formats
+      List<dynamic> runsData = [];
+
+      if (response is Map<String, dynamic>) {
+        if (response['status'] == 'success') {
+          // Handle data that could be either a List or a single object
+          final dynamic data = response['data'];
+
+          if (data is List) {
+            runsData = data;
+          } else if (data is Map<String, dynamic>) {
+            // If data is a single object, wrap it in a list
+            runsData = [data];
+          }
+          // If data is null, runsData remains empty list
+        } else if (response['status'] == 'error') {
+          // Server returned an error status
+          if (response['message']?.toString().toLowerCase().contains(
+                    'not found',
+                  ) ==
+                  true ||
+              response['message']?.toString().toLowerCase().contains(
+                    'no runs',
+                  ) ==
+                  true) {
+            // Treat "not found" as empty data, not an error
+            runsData = [];
+          } else {
+            _errorMessage = response['message'] ?? 'Failed to fetch runs';
+            _isLoading = false;
+            notifyListeners();
+            return;
+          }
+        }
+      } else if (response is List) {
+        // Handle direct list response
+        runsData = response;
       }
+      // If response is neither Map nor List, runsData remains empty
+
+      // Convert to Run objects
+      _runs = runsData
+          .map((runData) {
+            try {
+              return Run.fromJson(runData);
+            } catch (e) {
+              print('Error parsing run data: $e');
+              print('Run data: $runData');
+              return null;
+            }
+          })
+          .where((run) => run != null)
+          .cast<Run>()
+          .toList();
+
+      _runs.sort((a, b) => b.startedAt.compareTo(a.startedAt));
+      _currentRun = _runs.isNotEmpty && _runs.first.endedAt == null
+          ? _runs.first
+          : null;
+
+      _isLoading = false;
+      notifyListeners();
     } catch (e) {
-      _errorMessage = 'Network error: ${e.toString()}';
+      if (e.toString().contains('FormatException') ||
+          e.toString().contains('Unexpected character') ||
+          e.toString().contains('is not a subtype of type')) {
+        _runs = [];
+        _currentRun = null;
+        _errorMessage = null;
+      } else {
+        _errorMessage = 'Network error: ${e.toString()}';
+      }
+
       _isLoading = false;
       notifyListeners();
     }
@@ -66,7 +126,7 @@ class RunController extends ChangeNotifier {
       if (response['status'] == 'success') {
         final newRun = Run.fromJson(response['data']);
         _currentRun = newRun;
-        _runs.insert(0, newRun); 
+        _runs.insert(0, newRun);
 
         _isLoading = false;
         notifyListeners();
@@ -241,7 +301,7 @@ class RunController extends ChangeNotifier {
       return null;
     }
   }
-  
+
   Map<String, dynamic> getRunStatistics() {
     if (_runs.isEmpty) {
       return {

@@ -84,8 +84,9 @@ class AIMetrics {
   }
 
   double? get obstacleDetectionRate {
-    if (totalFramesProcessed == null || totalObstaclesDetected == null)
+    if (totalFramesProcessed == null || totalObstaclesDetected == null) {
       return null;
+    }
     if (totalFramesProcessed == 0) return 0.0;
     return totalObstaclesDetected! / totalFramesProcessed!;
   }
@@ -97,8 +98,9 @@ class AIMetrics {
   }
 
   double? get warningRate {
-    if (totalFramesProcessed == null || totalWarningsIssued == null)
+    if (totalFramesProcessed == null || totalWarningsIssued == null) {
       return null;
+    }
     if (totalFramesProcessed == 0) return 0.0;
     return totalWarningsIssued! / totalFramesProcessed!;
   }
@@ -110,8 +112,9 @@ class AIMetrics {
   }
 
   double? get laneDeviationRate {
-    if (totalFramesProcessed == null || laneDeviationsCount == null)
+    if (totalFramesProcessed == null || laneDeviationsCount == null) {
       return null;
+    }
     if (totalFramesProcessed == 0) return 0.0;
     return laneDeviationsCount! / totalFramesProcessed!;
   }
