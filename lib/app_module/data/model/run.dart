@@ -101,7 +101,6 @@ class Run {
     };
   }
 
-  // Helper methods for calculating run statistics
   String get formattedDuration {
     if (durationSeconds == null) return '00:00:00';
 
@@ -276,7 +275,6 @@ class RunUpdateRequest {
   }
 }
 
-// Enum untuk status run
 enum RunStatus { active, completed, paused }
 
 extension RunStatusExtension on RunStatus {

@@ -1,0 +1,332 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import '../app_module/data/model/run.dart';
+import '../app_module/data/model/ai_metrics.dart';
+
+class RunController extends ChangeNotifier {
+  List<Run> _runs = [];
+  Run? _currentRun;
+  bool _isLoading = false;
+  String? _errorMessage;
+  final CookieRequest request;
+  static const String baseUrl = 'http://localhost:8080/api/v1';
+
+  RunController({required this.request});
+
+  List<Run> get runs => _runs;
+  Run? get currentRun => _currentRun;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get hasActiveRun => _currentRun != null && _currentRun!.endedAt == null;
+
+  Future<void> fetchRuns() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final url = '$baseUrl/mobile/runs';
+      final response = await request.get(url);
+
+      if (response['status'] == 'success') {
+        final List<dynamic> runsData = response['data'] ?? [];
+        _runs = runsData.map((run) => Run.fromJson(run)).toList();
+        _runs.sort((a, b) => b.startedAt.compareTo(a.startedAt));
+        _currentRun = _runs.isNotEmpty && _runs.first.endedAt == null
+            ? _runs.first
+            : null;
+
+        _isLoading = false;
+        notifyListeners();
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to fetch runs';
+        _isLoading = false;
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<Run?> startRun(RunCreateRequest runRequest) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final url = '$baseUrl/mobile/runs';
+      final response = await request.postJson(
+        url,
+        jsonEncode(runRequest.toJson()),
+      );
+
+      if (response['status'] == 'success') {
+        final newRun = Run.fromJson(response['data']);
+        _currentRun = newRun;
+        _runs.insert(0, newRun); 
+
+        _isLoading = false;
+        notifyListeners();
+        return newRun;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to start run';
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<Run?> endRun(String runId, RunUpdateRequest? updateData) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final url = '$baseUrl/mobile/runs/$runId/end';
+      final data = updateData?.toJson() ?? {};
+      data['ended_at'] = DateTime.now().toIso8601String();
+
+      final response = await request.postJson(url, jsonEncode(data));
+
+      if (response['status'] == 'success') {
+        final updatedRun = Run.fromJson(response['data']);
+        if (_currentRun?.id == runId) {
+          _currentRun = updatedRun;
+        }
+        final index = _runs.indexWhere((run) => run.id == runId);
+        if (index != -1) {
+          _runs[index] = updatedRun;
+        }
+
+        _isLoading = false;
+        notifyListeners();
+        return updatedRun;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to end run';
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      _isLoading = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<Run?> updateRun(String runId, RunUpdateRequest updateRequest) async {
+    try {
+      final url = '$baseUrl/mobile/runs/$runId';
+      final response = await request.postJson(
+        url,
+        jsonEncode(updateRequest.toJson()),
+      );
+
+      if (response['status'] == 'success') {
+        final updatedRun = Run.fromJson(response['data']);
+        if (_currentRun?.id == runId) {
+          _currentRun = updatedRun;
+        }
+        final index = _runs.indexWhere((run) => run.id == runId);
+        if (index != -1) {
+          _runs[index] = updatedRun;
+        }
+
+        notifyListeners();
+        return updatedRun;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to update run';
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<bool> deleteRun(String runId) async {
+    try {
+      final url = '$baseUrl/mobile/runs/$runId';
+      final response = await request.post(url, {'_method': 'DELETE'});
+
+      if (response['status'] == 'success') {
+        if (_currentRun?.id == runId) {
+          _currentRun = null;
+        }
+        _runs.removeWhere((run) => run.id == runId);
+
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to delete run';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<Run?> getRunDetails(String runId) async {
+    try {
+      final url = '$baseUrl/mobile/runs/$runId';
+      final response = await request.get(url);
+
+      if (response['status'] == 'success') {
+        return Run.fromJson(response['data']);
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to get run details';
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      return null;
+    }
+  }
+
+  Future<AIMetrics?> submitAIMetrics(
+    String runId,
+    AIMetricsRequest metricsRequest,
+  ) async {
+    try {
+      final url = '$baseUrl/mobile/runs/$runId/ai-metrics';
+      final response = await request.postJson(
+        url,
+        jsonEncode(metricsRequest.toJson()),
+      );
+
+      if (response['status'] == 'success') {
+        final aiMetrics = AIMetrics.fromJson(response['data']);
+        notifyListeners();
+        return aiMetrics;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to submit AI metrics';
+        notifyListeners();
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      notifyListeners();
+      return null;
+    }
+  }
+
+  Future<AIMetrics?> getAIMetrics(String runId) async {
+    try {
+      final url = '$baseUrl/mobile/runs/$runId/ai-metrics';
+      final response = await request.get(url);
+
+      if (response['status'] == 'success') {
+        return AIMetrics.fromJson(response['data']);
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to get AI metrics';
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      return null;
+    }
+  }
+  
+  Map<String, dynamic> getRunStatistics() {
+    if (_runs.isEmpty) {
+      return {
+        'total_runs': 0,
+        'total_distance': 0.0,
+        'total_duration': 0,
+        'avg_speed': 0.0,
+        'total_calories': 0,
+      };
+    }
+
+    final completedRuns = _runs.where((run) => run.endedAt != null).toList();
+
+    final totalDistance = completedRuns.fold<double>(
+      0.0,
+      (sum, run) => sum + (run.distanceMeters ?? 0.0),
+    );
+
+    final totalDuration = completedRuns.fold<int>(
+      0,
+      (sum, run) => sum + (run.durationSeconds ?? 0),
+    );
+
+    final totalCalories = completedRuns.fold<int>(
+      0,
+      (sum, run) => sum + (run.caloriesBurned ?? 0),
+    );
+
+    final avgSpeed = completedRuns.isNotEmpty
+        ? completedRuns.fold<double>(
+                0.0,
+                (sum, run) => sum + (run.avgSpeedKmh ?? 0.0),
+              ) /
+              completedRuns.length
+        : 0.0;
+
+    return {
+      'total_runs': completedRuns.length,
+      'total_distance': totalDistance,
+      'total_duration': totalDuration,
+      'avg_speed': avgSpeed,
+      'total_calories': totalCalories,
+      'formatted_distance': '${(totalDistance / 1000).toStringAsFixed(2)} km',
+      'formatted_duration': _formatDuration(totalDuration),
+      'formatted_avg_speed': '${avgSpeed.toStringAsFixed(1)} km/h',
+    };
+  }
+
+  List<Run> getRecentRuns({int limit = 10}) {
+    return _runs.take(limit).toList();
+  }
+
+  List<Run> getRunsThisWeek() {
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+    return _runs.where((run) => run.startedAt.isAfter(weekStart)).toList();
+  }
+
+  List<Run> getRunsThisMonth() {
+    final now = DateTime.now();
+    final monthStart = DateTime(now.year, now.month, 1);
+    return _runs.where((run) => run.startedAt.isAfter(monthStart)).toList();
+  }
+
+  String _formatDuration(int seconds) {
+    final hours = seconds ~/ 3600;
+    final minutes = (seconds % 3600) ~/ 60;
+    final secs = seconds % 60;
+
+    if (hours > 0) {
+      return '${hours}h ${minutes}m ${secs}s';
+    } else if (minutes > 0) {
+      return '${minutes}m ${secs}s';
+    } else {
+      return '${secs}s';
+    }
+  }
+
+  void clearError() {
+    _errorMessage = null;
+    notifyListeners();
+  }
+
+  void clearCurrentRun() {
+    _currentRun = null;
+    notifyListeners();
+  }
+}

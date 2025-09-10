@@ -53,7 +53,6 @@ class PairingSession {
     };
   }
 
-  // Helper methods
   bool get isExpired => DateTime.now().isAfter(expiresAt);
 
   int get remainingSeconds {
@@ -78,7 +77,6 @@ class PairingSession {
 }
 
 class PairingRequest {
-  // Empty class as per Go model
   PairingRequest();
 
   Map<String, dynamic> toJson() {
@@ -124,7 +122,6 @@ class PairingResponse {
   DateTime get expiresAtDateTime => DateTime.parse(expiresAt);
 
   String get formattedCode {
-    // Format code dengan spasi atau dash jika perlu
     if (code.length == 6) {
       return '${code.substring(0, 3)} ${code.substring(3)}';
     }
@@ -225,7 +222,7 @@ class PairingDeviceInfo {
   }
 }
 
-// Enum untuk status pairing
+
 enum PairingStatus { pending, paired, expired }
 
 extension PairingStatusExtension on PairingStatus {
@@ -265,13 +262,10 @@ extension PairingStatusExtension on PairingStatus {
   }
 }
 
-// Constants
 class PairingConstants {
   static const Duration pairingCodeTTL = Duration(minutes: 5);
   static const String pairingStatusPending = 'pending';
   static const String pairingStatusPaired = 'paired';
   static const String pairingStatusExpired = 'expired';
-
-  // Helper method untuk generate session ID prefix
   static String generateSessionIdPrefix() => 'pair_';
 }
