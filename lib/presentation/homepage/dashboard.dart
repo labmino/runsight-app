@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../controller/auth_controller.dart';
 import '../../controller/run_controller.dart';
+import '../../controller/device_pairing_controller.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 import '../authentication/login.dart';
 import '../device/device_pairing_screen.dart';
+import '../run/setup_run_page.dart';
 import '../history/history_screen.dart';
 import '../settings/settings_page.dart';
+import '../community/community_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -29,6 +32,12 @@ class _DashboardPageState extends State<DashboardPage> {
   void _loadDashboardData() {
     final runController = Provider.of<RunController>(context, listen: false);
     runController.fetchRuns();
+
+    final deviceController = Provider.of<DevicePairingController>(
+      context,
+      listen: false,
+    );
+    deviceController.getConnectedDevices();
   }
 
   void _onNavBarTap(int index) {
@@ -57,7 +66,10 @@ class _DashboardPageState extends State<DashboardPage> {
         );
         break;
       case 3:
-        _navigateToProtectedPage('/community', 'Community');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CommunityPage()),
+        );
         break;
       case 4:
         Navigator.push(
@@ -76,78 +88,30 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  void _navigateToProtectedPage(String route, String pageName) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('$pageName page coming soon!'),
-        backgroundColor: const Color(0xff3abeff),
-      ),
-    );
-  }
-
-  Future<void> _handleLogout() async {
-    final authController = Provider.of<AuthController>(context, listen: false);
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xff1b1f3b),
-          title: Text(
-            'Logout',
-            style: TextStyle(color: const Color(0xffffffff)),
-          ),
-          content: Text(
-            'Are you sure you want to logout?',
-            style: TextStyle(color: const Color(0xff888b94)),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Cancel',
-                style: TextStyle(color: const Color(0xff888b94)),
-              ),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.pop(context);
-
-                try {
-                  await authController.logout();
-                  if (mounted) {
-                    _navigateToLogin();
-                  }
-                } catch (e) {
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Logout failed: ${e.toString()}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              child: Text('Logout', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _startRun() {
+  void _startRun() async {
     final authController = Provider.of<AuthController>(context, listen: false);
     if (!authController.isLoggedIn || authController.currentUser == null) {
       _navigateToLogin();
       return;
     }
 
-    Navigator.push(
+    final deviceController = Provider.of<DevicePairingController>(
       context,
-      MaterialPageRoute(builder: (context) => const DevicePairingScreen()),
+      listen: false,
     );
+    final devices = await deviceController.getConnectedDevices();
+
+    if (devices.isNotEmpty && deviceController.hasPairedDevice) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const SetupRunPage()),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const DevicePairingScreen()),
+      );
+    }
   }
 
   @override
@@ -434,41 +398,88 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildStartRunButton() {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: 40),
-        child: GestureDetector(
-          onTap: _startRun,
-          child: Container(
-            height: 72,
-            decoration: BoxDecoration(
-              color: const Color(0xff3abeff),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+    return Consumer<DevicePairingController>(
+      builder: (context, deviceController, child) {
+        final hasDevice = deviceController.hasPairedDevice;
+        final buttonText = hasDevice ? 'Start Running' : 'Connect & Run';
+        final buttonIcon = hasDevice ? Icons.play_arrow : Icons.link;
+
+        return SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 40),
+            child: Column(
               children: [
-                Icon(
-                  Icons.play_arrow,
-                  size: 32,
-                  color: const Color(0xff121212),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  'Start Running',
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontSize: 18,
-                    color: const Color(0xff121212),
-                    fontWeight: FontWeight.w600,
+                if (hasDevice) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0x194ade80),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            color: Color(0xff4ade80),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Device Connected',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Color(0xff4ade80),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                GestureDetector(
+                  onTap: _startRun,
+                  child: Container(
+                    height: 72,
+                    decoration: BoxDecoration(
+                      color: const Color(0xff3abeff),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          buttonIcon,
+                          size: 32,
+                          color: const Color(0xff121212),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          buttonText,
+                          style: const TextStyle(
+                            decoration: TextDecoration.none,
+                            fontSize: 18,
+                            color: Color(0xff121212),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

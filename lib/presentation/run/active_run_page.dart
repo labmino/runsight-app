@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:provider/provider.dart';
 import '../../controller/run_controller.dart';
 import '../../app_module/data/model/run.dart';
+import 'run_summary_page.dart';
 import 'dart:math';
 
 class ActiveRunPage extends StatefulWidget {
@@ -46,9 +47,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
-        // Simulate distance increase (roughly 0.1 miles per minute at moderate pace)
-        _distance += 0.0017; // Approximately 0.1 miles per minute
-        // Simulate slight pace variations
+        _distance += 0.0017;
         _currentPace = 8.42 + ((_seconds % 30) / 30 - 0.5) * 0.5;
       });
     });
@@ -70,26 +69,28 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff1b1f3b),
-      body: Column(
-        children: [
-          _buildConnectionStatus(),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  _buildRunningStats(),
-                  const SizedBox(height: 32),
-                  _buildVoiceGuidanceSection(),
-                  const SizedBox(height: 32),
-                  _buildCurrentGuidance(),
-                  const Spacer(),
-                ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildConnectionStatus(),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  children: [
+                    _buildRunningStats(),
+                    const SizedBox(height: 32),
+                    _buildVoiceGuidanceSection(),
+                    const SizedBox(height: 32),
+                    _buildCurrentGuidance(),
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
-          ),
-          _buildBottomControls(),
-        ],
+            _buildBottomControls(),
+          ],
+        ),
       ),
     );
   }
@@ -134,7 +135,6 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
   Widget _buildRunningStats() {
     return Column(
       children: [
-        // Main timer
         Text(
           _formatTime(_seconds),
           textAlign: TextAlign.center,
@@ -155,7 +155,6 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
           ),
         ),
         const SizedBox(height: 24),
-        // Distance and Pace
         Row(
           children: [
             Expanded(
@@ -287,7 +286,6 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          // Emergency SOS Button
           GestureDetector(
             onTap: _showEmergencyDialog,
             child: Container(
@@ -315,7 +313,6 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
             ),
           ),
           const SizedBox(height: 16),
-          // Control buttons row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -459,11 +456,319 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
   }
 
   void _showSettings() {
-    // TODO: Show run settings (voice volume, etc.)
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Run settings coming soon!'),
-        backgroundColor: Color(0xff3abeff),
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xff2a2e45),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => _buildRunSettingsModal(),
+    );
+  }
+
+  Widget _buildRunSettingsModal() {
+    return Container(
+      padding: const EdgeInsets.all(24),
+      height: 400,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Run Settings',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              IconButton(
+                onPressed: () => Navigator.pop(context),
+                icon: const Icon(Icons.close, color: Colors.white),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          _buildSettingsSection(
+            title: 'Voice Guidance',
+            subtitle: widget.voiceEnabled
+                ? 'Currently enabled'
+                : 'Currently disabled',
+            icon: widget.voiceEnabled ? Icons.mic : Icons.mic_off,
+            onTap: () {
+              Navigator.pop(context);
+              _showVoiceSettings();
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          _buildSettingsSection(
+            title: 'GPS & Navigation',
+            subtitle: widget.gpsEnabled ? 'High accuracy mode' : 'GPS disabled',
+            icon: widget.gpsEnabled ? Icons.gps_fixed : Icons.gps_off,
+            onTap: () {
+              Navigator.pop(context);
+              _showGpsSettings();
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          _buildSettingsSection(
+            title: 'Display Options',
+            subtitle: 'Screen timeout, brightness',
+            icon: Icons.brightness_6,
+            onTap: () {
+              Navigator.pop(context);
+              _showDisplaySettings();
+            },
+          ),
+
+          const SizedBox(height: 16),
+
+          _buildSettingsSection(
+            title: 'Emergency Settings',
+            subtitle: 'Emergency contacts, SOS options',
+            icon: Icons.emergency,
+            onTap: () {
+              Navigator.pop(context);
+              _showEmergencySettings();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: const Color(0xff3a3f56),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: const Color(0xff3abeff).withOpacity(0.2),
+                borderRadius: BorderRadius.circular(24),
+              ),
+              child: Icon(icon, color: const Color(0xff3abeff), size: 24),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xff888b94),
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(
+              Icons.arrow_forward_ios,
+              color: Color(0xff888b94),
+              size: 16,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showVoiceSettings() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xff2a2e45),
+        title: const Text(
+          'Voice Settings',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Adjust voice guidance during your run',
+              style: TextStyle(color: Color(0xff888b94)),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Voice Volume',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text(
+                  '${widget.voiceEnabled ? "Enabled" : "Disabled"}',
+                  style: const TextStyle(color: Color(0xff3abeff)),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xff3abeff)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showGpsSettings() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xff2a2e45),
+        title: const Text(
+          'GPS Settings',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'GPS tracking settings for your run',
+              style: TextStyle(color: Color(0xff888b94)),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('GPS Status', style: TextStyle(color: Colors.white)),
+                Text(
+                  '${widget.gpsEnabled ? "Active" : "Disabled"}',
+                  style: const TextStyle(color: Color(0xff3abeff)),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xff3abeff)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showDisplaySettings() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xff2a2e45),
+        title: const Text(
+          'Display Settings',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Screen display options during your run',
+              style: TextStyle(color: Color(0xff888b94)),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Keep Screen On', style: TextStyle(color: Colors.white)),
+                Text('Enabled', style: TextStyle(color: Color(0xff3abeff))),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xff3abeff)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showEmergencySettings() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xff2a2e45),
+        title: const Text(
+          'Emergency Settings',
+          style: TextStyle(color: Colors.white),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Configure emergency SOS settings',
+              style: TextStyle(color: Color(0xff888b94)),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Emergency Contacts',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Text('2 contacts', style: TextStyle(color: Color(0xff3abeff))),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text(
+              'Close',
+              style: TextStyle(color: Color(0xff3abeff)),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -478,62 +783,91 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     );
   }
 
-  void _endRun() {
+  void _endRun() async {
     _timer?.cancel();
-
-    // Create run data to save
     final runController = Provider.of<RunController>(context, listen: false);
+    final totalTime = Duration(seconds: _seconds);
+    final distanceKm = _distance * 1.60934;
+    final averagePace = _seconds > 0 && distanceKm > 0
+        ? (_seconds / 60) / distanceKm
+        : 0.0;
+    final calories = (_distance * 65 + _seconds * 0.5).round();
 
     final runData = RunCreateRequest(
-      deviceId: 'device_001', // This should come from actual device pairing
+      deviceId: 'device_001',
       sessionId: 'session_${DateTime.now().millisecondsSinceEpoch}',
-      title: 'Morning Run',
-      notes: 'Great run with voice guidance!',
+      title: '${widget.selectedMode} Run',
+      notes: 'Run completed with RunSight glasses',
       startedAt: DateTime.now().subtract(Duration(seconds: _seconds)),
       endedAt: DateTime.now(),
       durationSeconds: _seconds,
-      distanceMeters: (_distance * 1000).round().toDouble(),
-      avgSpeedKmh: (_distance / (_seconds / 3600)).isFinite
-          ? (_distance / (_seconds / 3600))
+      distanceMeters: (distanceKm * 1000).round().toDouble(),
+      avgSpeedKmh: (distanceKm / (_seconds / 3600)).isFinite
+          ? (distanceKm / (_seconds / 3600))
           : 0.0,
-      maxSpeedKmh: _currentPace * 1.2, // Simulate max speed
-      caloriesBurned: (_distance * 65 + _seconds * 0.5)
-          .round(), // Rough calorie calculation
-      stepsCount: (_distance * 1312)
-          .round(), // Rough steps calculation (avg 1312 steps per mile)
+      maxSpeedKmh: _currentPace * 1.2,
+      caloriesBurned: calories,
+      stepsCount: (distanceKm * 1312).round(),
       startLatitude: -6.200000 + (Random().nextDouble() - 0.5) * 0.01,
       startLongitude: 106.816666 + (Random().nextDouble() - 0.5) * 0.01,
       endLatitude: -6.200000 + (Random().nextDouble() - 0.5) * 0.01,
       endLongitude: 106.816666 + (Random().nextDouble() - 0.5) * 0.01,
     );
 
-    // Save the run
-    runController
-        .startRun(runData)
-        .then(
-          (run) => {
-            if (run != null)
-              {
-                // End the run immediately since it's already completed
-                runController.endRun(
-                  run.id,
-                  RunUpdateRequest(endedAt: DateTime.now()),
-                ),
-              },
-          },
+    try {
+      final run = await runController.startRun(runData);
+      if (run != null) {
+        await runController.endRun(
+          run.id,
+          RunUpdateRequest(endedAt: DateTime.now()),
+        );
+      }
+
+      List<String> achievements = [];
+      if (distanceKm >= 5.0) achievements.add('5K Completed!');
+      if (distanceKm >= 10.0) achievements.add('10K Master!');
+      if (_seconds >= 1800) achievements.add('30+ Minutes Runner!');
+      if (averagePace > 0 && averagePace < 6.0)
+        achievements.add('Speed Demon!');
+
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RunSummaryPage(
+              selectedMode: widget.selectedMode,
+              totalTime: totalTime,
+              distanceKm: distanceKm,
+              averagePace: averagePace,
+              calories: calories,
+              achievements: achievements,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to save run, but showing summary'),
+            backgroundColor: Colors.orange,
+          ),
         );
 
-    // Navigate back to home with run summary
-    Navigator.of(context).popUntil((route) => route.isFirst);
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Run completed! Distance: ${_distance.toStringAsFixed(1)} miles, Time: ${_formatTime(_seconds)}',
-        ),
-        backgroundColor: Colors.green,
-        duration: const Duration(seconds: 4),
-      ),
-    );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RunSummaryPage(
+              selectedMode: widget.selectedMode,
+              totalTime: totalTime,
+              distanceKm: distanceKm,
+              averagePace: averagePace,
+              calories: calories,
+              achievements: [],
+            ),
+          ),
+        );
+      }
+    }
   }
 }

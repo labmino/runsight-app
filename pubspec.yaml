@@ -31,7 +31,7 @@ dependencies:
   # Media & Image
   image_picker: ^1.2.0
   intl: ^0.20.2
-  flutter_tts: ^4.0.2
+  text_to_speech: ^0.2.3
 
   # Grouping & Lists
   grouped_list: ^5.1.2

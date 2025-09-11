@@ -41,19 +41,22 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildVoiceInstructionsSection(),
-                  const SizedBox(height: 24),
-                  _buildVibrationPatternsSection(),
-                  const SizedBox(height: 24),
-                  _buildAudioSystemStatus(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildVoiceInstructionsSection(),
+                    const SizedBox(height: 24),
+                    _buildVibrationPatternsSection(),
+                    const SizedBox(height: 24),
+                    _buildAudioSystemStatus(),
+                    const SizedBox(height: 24),
+                    _buildTestAllButton(),
+                    const SizedBox(height: 24), // Extra padding at bottom
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            _buildTestAllButton(),
           ],
         ),
       ),
@@ -106,19 +109,18 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
     return GestureDetector(
       onTap: onPlay,
       child: Container(
-        height: 72,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
@@ -128,7 +130,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Text(
                       instruction,
                       style: const TextStyle(
@@ -136,19 +138,19 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                         color: Color(0xff666666),
                         fontWeight: FontWeight.normal,
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 16),
               Container(
-                width: 56,
-                height: 56,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: const Color(0xff3abeff).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Icon(icon, size: 24, color: const Color(0xff3abeff)),
               ),
@@ -198,19 +200,18 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
     return GestureDetector(
       onTap: onTest,
       child: Container(
-        height: 64,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
@@ -220,7 +221,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4),
                     Text(
                       description,
                       style: const TextStyle(
@@ -232,13 +233,13 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                   ],
                 ),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 16),
               Container(
-                width: 56,
-                height: 56,
+                width: 48,
+                height: 48,
                 decoration: BoxDecoration(
                   color: const Color(0xff3abeff).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(28),
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Icon(icon, size: 24, color: const Color(0xff3abeff)),
               ),
@@ -321,13 +322,15 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
   Widget _buildTestAllButton() {
     return Container(
       width: double.infinity,
-      height: 56,
       decoration: BoxDecoration(
         color: const Color(0xff3abeff),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextButton(
         onPressed: _testAllAudioAndVibration,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

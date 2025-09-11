@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+import 'package:text_to_speech/text_to_speech.dart';
 import 'active_run_page.dart';
 
 class RunBriefingPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class RunBriefingPage extends StatefulWidget {
 }
 
 class _RunBriefingPageState extends State<RunBriefingPage> {
-  FlutterTts flutterTts = FlutterTts();
+  TextToSpeech tts = TextToSpeech();
   bool _isPlaying = false;
   bool _isCompleted = false;
 
@@ -50,7 +50,6 @@ class _RunBriefingPageState extends State<RunBriefingPage> {
   void initState() {
     super.initState();
     _initTts();
-    // Start playing briefing automatically after a short delay
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(milliseconds: 500), () {
         if (mounted) _playBriefing();
@@ -60,40 +59,22 @@ class _RunBriefingPageState extends State<RunBriefingPage> {
 
   @override
   void dispose() {
-    flutterTts.stop();
+    try {
+      tts.stop();
+    } catch (e) {
+      print('TTS stop error on dispose: $e');
+    }
     super.dispose();
   }
 
   Future<void> _initTts() async {
-    await flutterTts.setLanguage("en-US");
-    await flutterTts.setSpeechRate(0.8);
-    await flutterTts.setVolume(0.8);
-    await flutterTts.setPitch(1.0);
-
-    flutterTts.setStartHandler(() {
-      if (mounted) {
-        setState(() {
-          _isPlaying = true;
-        });
-      }
-    });
-
-    flutterTts.setCompletionHandler(() {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-          _isCompleted = true;
-        });
-      }
-    });
-
-    flutterTts.setErrorHandler((msg) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-        });
-      }
-    });
+    try {
+      await tts.setRate(0.8);
+      await tts.setVolume(0.8);
+      await tts.setPitch(1.0);
+    } catch (e) {
+      print('TTS initialization error: $e');
+    }
   }
 
   String get _briefingText {
@@ -121,10 +102,42 @@ Tap the start button when you're ready to begin your guided run.
   }
 
   Future<void> _playBriefing() async {
-    if (_isPlaying) {
-      await flutterTts.stop();
-    } else {
-      await flutterTts.speak(_briefingText);
+    try {
+      if (_isPlaying) {
+        await tts.stop();
+        setState(() {
+          _isPlaying = false;
+        });
+      } else {
+        setState(() {
+          _isPlaying = true;
+        });
+
+        await tts.speak(_briefingText);
+
+        if (mounted) {
+          setState(() {
+            _isPlaying = false;
+            _isCompleted = true;
+          });
+        }
+      }
+    } catch (e) {
+      print('TTS error: $e');
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+          _isCompleted = true;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Voice briefing not available, but you can continue'),
+            backgroundColor: Colors.orange,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -136,7 +149,6 @@ Tap the start button when you're ready to begin your guided run.
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeader(context),
               const SizedBox(height: 32),
@@ -165,42 +177,44 @@ Tap the start button when you're ready to begin your guided run.
   }
 
   Widget _buildAudioSection() {
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: _playBriefing,
-          child: Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: _isPlaying
-                  ? const Color(0xff3abeff)
-                  : const Color(0xff2a2e45),
-              borderRadius: BorderRadius.circular(60),
-              border: Border.all(color: const Color(0xff3abeff), width: 2),
-            ),
-            child: Icon(
-              _isPlaying ? Icons.pause : Icons.play_arrow,
-              size: 48,
-              color: _isPlaying ? Colors.white : const Color(0xff3abeff),
+    return Center(
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: _playBriefing,
+            child: Container(
+              width: 120,
+              height: 120,
+              decoration: BoxDecoration(
+                color: _isPlaying
+                    ? const Color(0xff3abeff)
+                    : const Color(0xff2a2e45),
+                borderRadius: BorderRadius.circular(60),
+                border: Border.all(color: const Color(0xff3abeff), width: 2),
+              ),
+              child: Icon(
+                _isPlaying ? Icons.pause : Icons.play_arrow,
+                size: 48,
+                color: _isPlaying ? Colors.white : const Color(0xff3abeff),
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          _isPlaying
-              ? '🔊 Playing audio briefing...'
-              : _isCompleted
-              ? '✅ Briefing completed'
-              : '🔊 Tap to play briefing',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 16,
-            color: _isCompleted ? Colors.green : const Color(0xff3abeff),
-            fontWeight: FontWeight.w500,
+          const SizedBox(height: 24),
+          Text(
+            _isPlaying
+                ? '🔊 Playing audio briefing...'
+                : _isCompleted
+                ? '✅ Briefing completed'
+                : '🔊 Tap to play briefing',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              color: _isCompleted ? Colors.green : const Color(0xff3abeff),
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -400,37 +414,41 @@ Tap the start button when you're ready to begin your guided run.
 
     return Padding(
       padding: const EdgeInsets.only(top: 20),
-      child: GestureDetector(
-        onTap: canStart ? () => _startRun(context) : null,
-        child: Container(
-          width: double.infinity,
-          height: 72,
-          decoration: BoxDecoration(
-            color: canStart ? const Color(0xff3abeff) : const Color(0xff2a2e45),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.directions_run,
-                size: 32,
-                color: canStart
-                    ? const Color(0xff121212)
-                    : const Color(0xff888b94),
-              ),
-              const SizedBox(width: 16),
-              Text(
-                'Start My Run',
-                style: TextStyle(
-                  fontSize: 18,
+      child: Center(
+        child: GestureDetector(
+          onTap: canStart ? () => _startRun(context) : null,
+          child: Container(
+            width: double.infinity,
+            height: 72,
+            decoration: BoxDecoration(
+              color: canStart
+                  ? const Color(0xff3abeff)
+                  : const Color(0xff2a2e45),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.directions_run,
+                  size: 32,
                   color: canStart
                       ? const Color(0xff121212)
                       : const Color(0xff888b94),
-                  fontWeight: FontWeight.w600,
                 ),
-              ),
-            ],
+                const SizedBox(width: 16),
+                Text(
+                  'Start My Run',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: canStart
+                        ? const Color(0xff121212)
+                        : const Color(0xff888b94),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -438,10 +456,12 @@ Tap the start button when you're ready to begin your guided run.
   }
 
   void _startRun(BuildContext context) {
-    // Stop TTS if playing
-    flutterTts.stop();
+    try {
+      tts.stop();
+    } catch (e) {
+      print('TTS stop error: $e');
+    }
 
-    // Show confirmation dialog
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -465,7 +485,6 @@ Tap the start button when you're ready to begin your guided run.
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              // Navigate to active run page
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(

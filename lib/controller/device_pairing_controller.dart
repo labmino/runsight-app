@@ -37,17 +37,14 @@ class DevicePairingController extends ChangeNotifier {
       print('DEBUG: Response message: ${response['message']}');
       print('DEBUG: Response data: ${response['data']}');
 
-      // Check if response contains pairing data - API uses "status": "success" not "success": true
       if (response['success'] == true ||
           response['status'] == 'success' ||
           (response.containsKey('code') &&
               response.containsKey('session_id'))) {
         print('DEBUG: Success response, parsing data...');
 
-        // If data is nested under 'data' field, use that. Otherwise use response directly
         final dataToparse = response['data'] ?? response;
 
-        // Ensure code is string for the model
         final Map<String, dynamic> normalizedData = Map<String, dynamic>.from(
           dataToparse,
         );
@@ -71,6 +68,19 @@ class DevicePairingController extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return pairingResponse;
+      } else if (response['message'] != null &&
+          (response['message'].toString().toLowerCase().contains(
+                'already paired',
+              ) ||
+              response['message'].toString().toLowerCase().contains(
+                'already registered',
+              ))) {
+        print('DEBUG: Device already paired, checking connected devices...');
+        await getConnectedDevices();
+        _errorMessage = null;
+        _isLoading = false;
+        notifyListeners();
+        return null; 
       } else {
         print('DEBUG: Failed response');
         _errorMessage = response['message'] ?? 'Failed to request pairing code';

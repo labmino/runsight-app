@@ -10,6 +10,7 @@ import '../authentication/login.dart';
 import '../device/device_pairing_screen.dart';
 import 'run_detail_page.dart';
 import '../settings/settings_page.dart';
+import '../community/community_page.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -61,8 +62,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         );
         break;
       case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Community page coming soon!')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CommunityPage()),
         );
         break;
       case 4:

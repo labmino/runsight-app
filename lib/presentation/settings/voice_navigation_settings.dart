@@ -46,21 +46,24 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildVoiceTypeSection(),
-                  const SizedBox(height: 24),
-                  _buildLanguageSection(),
-                  const SizedBox(height: 24),
-                  _buildVoiceVolumeSection(),
-                  const SizedBox(height: 24),
-                  _buildGuidanceSensitivitySection(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildVoiceTypeSection(),
+                    const SizedBox(height: 24),
+                    _buildLanguageSection(),
+                    const SizedBox(height: 24),
+                    _buildVoiceVolumeSection(),
+                    const SizedBox(height: 24),
+                    _buildGuidanceSensitivitySection(),
+                    const SizedBox(height: 24),
+                    _buildSaveButton(),
+                    const SizedBox(height: 24), // Extra padding at bottom
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            _buildSaveButton(),
           ],
         ),
       ),
@@ -109,7 +112,6 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
           border: isSelected
@@ -118,13 +120,13 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       name,
@@ -134,7 +136,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       description,
                       style: const TextStyle(
@@ -148,15 +150,15 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
               ),
               const SizedBox(width: 16),
               Container(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: const Color(0xff3abeff).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Icon(
                   avatarIcon,
-                  size: 24,
+                  size: 20,
                   color: const Color(0xff3abeff),
                 ),
               ),
@@ -183,13 +185,12 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
         GestureDetector(
           onTap: _showLanguageSelector,
           child: Container(
-            height: 56,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Expanded(
@@ -310,7 +311,6 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
     return GestureDetector(
       onTap: () => setState(() => selectedSensitivity = value),
       child: Container(
-        height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
           border: isSelected
@@ -319,13 +319,13 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
@@ -335,7 +335,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       description,
                       style: const TextStyle(
@@ -348,21 +348,21 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                 ),
               ),
               Container(
-                width: 48,
-                height: 28,
+                width: 44,
+                height: 24,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? const Color(0xff3abeff)
                       : const Color(0xffe5e7eb),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
                   child: Container(
-                    width: 20,
-                    height: 20,
+                    width: 16,
+                    height: 16,
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                 ),
@@ -377,13 +377,15 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
   Widget _buildSaveButton() {
     return Container(
       width: double.infinity,
-      height: 56,
       decoration: BoxDecoration(
         color: const Color(0xff3abeff),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextButton(
         onPressed: _saveSettings,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
         child: const Text(
           'Save Voice Settings',
           style: TextStyle(

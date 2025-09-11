@@ -7,6 +7,8 @@ import '../../widgets/custom_bottom_nav_bar.dart';
 import '../homepage/dashboard.dart';
 import '../authentication/login.dart';
 import '../settings/settings_page.dart';
+import '../community/community_page.dart';
+import '../run/setup_run_page.dart';
 import 'pairing_code_page.dart';
 
 class DevicePairingScreen extends StatefulWidget {
@@ -27,12 +29,12 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
     });
   }
 
-  void _loadAvailableDevices() {
+  void _loadAvailableDevices() async {
     final pairingController = Provider.of<DevicePairingController>(
       context,
       listen: false,
     );
-    pairingController.getConnectedDevices();
+    await pairingController.getConnectedDevices();
   }
 
   void _connectDevice() async {
@@ -40,6 +42,11 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
       context,
       listen: false,
     );
+
+    if (pairingController.hasPairedDevice) {
+      _goToSetupRun();
+      return;
+    }
 
     print('DEBUG: Starting pairing code request...');
     final pairingResponse = await pairingController.requestPairingCode();
@@ -50,15 +57,17 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
 
     if (pairingResponse != null) {
       print('DEBUG: Navigating to pairing code page...');
-      // Navigate to pairing code page
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const PairingCodePage()),
       );
     } else {
-      print('DEBUG: Pairing response is null, showing error');
-      // Show error message
-      if (pairingController.errorMessage != null) {
+      if (pairingController.errorMessage == null &&
+          pairingController.hasPairedDevice) {
+        print('DEBUG: Device already paired, going to setup run...');
+        _goToSetupRun();
+      } else if (pairingController.errorMessage != null) {
+        print('DEBUG: Showing error: ${pairingController.errorMessage}');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(pairingController.errorMessage!),
@@ -74,6 +83,13 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
         );
       }
     }
+  }
+
+  void _goToSetupRun() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SetupRunPage()),
+    );
   }
 
   void _onNavBarTap(int index) {
@@ -103,8 +119,9 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
       case 2:
         break;
       case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Community page coming soon!')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CommunityPage()),
         );
         break;
       case 4:
@@ -169,42 +186,54 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
   }
 
   Widget _buildHeader() {
-    return Column(
-      children: [
-        Row(
+    return Consumer<DevicePairingController>(
+      builder: (context, pairingController, child) {
+        final isDeviceConnected = pairingController.hasPairedDevice;
+
+        return Column(
           children: [
-            Expanded(
-              child: Text(
-                'Connect Your Device',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  decoration: TextDecoration.none,
-                  fontSize: 28,
-                  color: const Color(0xffffffff),
-                  fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    isDeviceConnected
+                        ? 'Device Connected'
+                        : 'Connect Your Device',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: 28,
+                      color: const Color(0xffffffff),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    isDeviceConnected
+                        ? 'Your smart glasses are ready for running'
+                        : 'Pair your smart glasses to get started',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: 16,
+                      color: isDeviceConnected
+                          ? const Color(0xff4ade80)
+                          : const Color(0xff888b94),
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                'Pair your smart glasses to get started',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  decoration: TextDecoration.none,
-                  fontSize: 16,
-                  color: const Color(0xff888b94),
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -223,22 +252,38 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
         ),
         const SizedBox(height: 16),
 
-        _buildDeviceCard(
-          deviceName: 'RunSight Glasses Pro',
-          deviceModel: 'Model: RSG-2024',
-          isAvailable: true,
-          signalStrength: 'Strong',
-          iconColor: const Color(0xff3abeff),
-        ),
+        Consumer<DevicePairingController>(
+          builder: (context, pairingController, child) {
+            final isPaired = pairingController.hasPairedDevice;
+            final pairedDevice = pairingController.pairedDevice;
 
-        const SizedBox(height: 16),
+            return Column(
+              children: [
+                _buildDeviceCard(
+                  deviceName:
+                      pairedDevice?.deviceName ?? 'RunSight Glasses Pro',
+                  deviceModel: 'Model: RSG-2024',
+                  isAvailable: true,
+                  signalStrength: isPaired ? 'Connected' : 'Strong',
+                  iconColor: isPaired
+                      ? const Color(0xff4ade80)
+                      : const Color(0xff3abeff),
+                  isConnected: isPaired,
+                ),
 
-        _buildDeviceCard(
-          deviceName: 'RunSight Glasses Lite',
-          deviceModel: 'Model: RSG-2023',
-          isAvailable: false,
-          signalStrength: 'Out of range',
-          iconColor: const Color(0xff888b94),
+                const SizedBox(height: 16),
+
+                _buildDeviceCard(
+                  deviceName: 'RunSight Glasses Lite',
+                  deviceModel: 'Model: RSG-2023',
+                  isAvailable: false,
+                  signalStrength: 'Out of range',
+                  iconColor: const Color(0xff888b94),
+                  isConnected: false,
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
@@ -250,12 +295,16 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
     required bool isAvailable,
     required String signalStrength,
     required Color iconColor,
+    bool isConnected = false,
   }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: isAvailable ? const Color(0xffffffff) : const Color(0x99ffffff),
         borderRadius: BorderRadius.circular(16),
+        border: isConnected
+            ? Border.all(color: const Color(0xff4ade80), width: 2)
+            : null,
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -309,7 +358,9 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        isAvailable ? 'Ready to pair' : 'Out of range',
+                        isConnected
+                            ? 'Connected'
+                            : (isAvailable ? 'Ready to pair' : 'Out of range'),
                         style: TextStyle(
                           decoration: TextDecoration.none,
                           fontSize: 12,
@@ -327,7 +378,11 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
 
             Column(
               children: [
-                Icon(Icons.wifi, size: 20, color: iconColor),
+                Icon(
+                  isConnected ? Icons.check_circle : Icons.wifi,
+                  size: 20,
+                  color: iconColor,
+                ),
                 const SizedBox(height: 4),
                 Text(
                   signalStrength,
@@ -349,6 +404,14 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
   Widget _buildConnectSection() {
     return Consumer<DevicePairingController>(
       builder: (context, pairingController, child) {
+        final isDeviceConnected = pairingController.hasPairedDevice;
+        final buttonText = isDeviceConnected
+            ? 'Start Run Setup'
+            : 'Connect Device';
+        final buttonColor = isDeviceConnected
+            ? const Color(0xff4ade80)
+            : const Color(0xff3abeff);
+
         return Column(
           children: [
             GestureDetector(
@@ -357,7 +420,7 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
                 width: double.infinity,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: const Color(0xff3abeff),
+                  color: buttonColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -385,8 +448,15 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
                         ),
                       ),
                     ] else ...[
+                      if (isDeviceConnected)
+                        Icon(
+                          Icons.directions_run,
+                          size: 20,
+                          color: const Color(0xff1b1f3b),
+                        ),
+                      if (isDeviceConnected) const SizedBox(width: 8),
                       Text(
-                        'Connect Device',
+                        buttonText,
                         style: TextStyle(
                           decoration: TextDecoration.none,
                           fontSize: 16,
@@ -402,20 +472,43 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
 
             const SizedBox(height: 16),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Need help pairing?',
-                  style: TextStyle(
-                    decoration: TextDecoration.none,
-                    fontSize: 14,
-                    color: const Color(0xff888b94),
-                    fontWeight: FontWeight.normal,
+            if (!isDeviceConnected) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Need help pairing?',
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: 14,
+                      color: const Color(0xff888b94),
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ] else ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 16,
+                    color: const Color(0xff4ade80),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Device connected and ready',
+                    style: TextStyle(
+                      decoration: TextDecoration.none,
+                      fontSize: 14,
+                      color: const Color(0xff4ade80),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         );
       },

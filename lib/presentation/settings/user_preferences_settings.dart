@@ -47,19 +47,22 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
             ),
             const SizedBox(height: 24),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildWeeklyGoalSection(),
-                  const SizedBox(height: 24),
-                  _buildRunningModeSection(),
-                  const SizedBox(height: 24),
-                  _buildDailyRemindersSection(),
-                ],
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildWeeklyGoalSection(),
+                    const SizedBox(height: 24),
+                    _buildRunningModeSection(),
+                    const SizedBox(height: 24),
+                    _buildDailyRemindersSection(),
+                    const SizedBox(height: 24),
+                    _buildSaveButton(),
+                    const SizedBox(height: 24), // Extra padding at bottom
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 24),
-            _buildSaveButton(),
           ],
         ),
       ),
@@ -110,7 +113,6 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
     return GestureDetector(
       onTap: () => setState(() => selectedWeeklyGoal = value),
       child: Container(
-        height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
           border: isSelected
@@ -119,13 +121,13 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       title,
@@ -135,7 +137,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                         fontWeight: FontWeight.normal,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 2),
                     Text(
                       description,
                       style: const TextStyle(
@@ -183,13 +185,12 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
         GestureDetector(
           onTap: _showRunningModeSelector,
           child: Container(
-            height: 56,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Expanded(
@@ -260,19 +261,18 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
     required ValueChanged<bool> onChanged,
   }) {
     return Container(
-      height: 56,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Row(
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     title,
@@ -282,7 +282,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     description,
                     style: const TextStyle(
@@ -331,13 +331,15 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
   Widget _buildSaveButton() {
     return Container(
       width: double.infinity,
-      height: 56,
       decoration: BoxDecoration(
         color: const Color(0xff3abeff),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextButton(
         onPressed: _savePreferences,
+        style: TextButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+        ),
         child: const Text(
           'Save Preferences',
           style: TextStyle(

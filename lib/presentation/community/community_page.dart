@@ -93,21 +93,46 @@ class _CommunityPageState extends State<CommunityPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Community',
-            style: TextStyle(
-              fontSize: 24,
-              color: Colors.white,
-              fontWeight: FontWeight.w600,
-            ),
+          Row(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff2a2e45),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Text(
+                'Community',
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          const Text(
-            'Connect with fellow runners',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xff3abeff),
-              fontWeight: FontWeight.normal,
+          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.only(left: 52),
+            child: Text(
+              'Connect with fellow runners',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xff3abeff),
+                fontWeight: FontWeight.normal,
+              ),
             ),
           ),
         ],
@@ -286,13 +311,13 @@ class _CommunityPageState extends State<CommunityPage> {
 
   Widget _buildReactions(CommunityPost post) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: post.reactions.entries.map((entry) {
-            return Padding(
-              padding: const EdgeInsets.only(right: 16),
-              child: GestureDetector(
+        Expanded(
+          child: Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: post.reactions.entries.map((entry) {
+              return GestureDetector(
                 onTap: () {
                   setState(() {
                     post.reactions[entry.key] = entry.value + 1;
@@ -322,10 +347,11 @@ class _CommunityPageState extends State<CommunityPage> {
                     ],
                   ),
                 ),
-              ),
-            );
-          }).toList(),
+              );
+            }).toList(),
+          ),
         ),
+        const SizedBox(width: 12),
         GestureDetector(
           onTap: () {
             _showCommentDialog(post);
