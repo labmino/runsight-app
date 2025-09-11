@@ -4,7 +4,8 @@ class VoiceNavigationSettings extends StatefulWidget {
   const VoiceNavigationSettings({super.key});
 
   @override
-  State<VoiceNavigationSettings> createState() => _VoiceNavigationSettingsState();
+  State<VoiceNavigationSettings> createState() =>
+      _VoiceNavigationSettingsState();
 }
 
 class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
@@ -111,7 +112,9 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
         height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
-          border: isSelected ? Border.all(color: const Color(0xff3abeff), width: 2) : null,
+          border: isSelected
+              ? Border.all(color: const Color(0xff3abeff), width: 2)
+              : null,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -303,14 +306,16 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
     required String value,
   }) {
     final isSelected = selectedSensitivity == value;
-    
+
     return GestureDetector(
       onTap: () => setState(() => selectedSensitivity = value),
       child: Container(
         height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
-          border: isSelected ? Border.all(color: const Color(0xff3abeff), width: 2) : null,
+          border: isSelected
+              ? Border.all(color: const Color(0xff3abeff), width: 2)
+              : null,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -346,7 +351,9 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                 width: 48,
                 height: 28,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xff3abeff) : const Color(0xffe5e7eb),
+                  color: isSelected
+                      ? const Color(0xff3abeff)
+                      : const Color(0xffe5e7eb),
                   borderRadius: BorderRadius.circular(14),
                 ),
                 child: Center(

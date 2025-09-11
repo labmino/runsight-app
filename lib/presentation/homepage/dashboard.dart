@@ -6,6 +6,7 @@ import '../../widgets/custom_bottom_nav_bar.dart';
 import '../authentication/login.dart';
 import '../device/device_pairing_screen.dart';
 import '../history/history_screen.dart';
+import '../settings/settings_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -59,7 +60,10 @@ class _DashboardPageState extends State<DashboardPage> {
         _navigateToProtectedPage('/community', 'Community');
         break;
       case 4:
-        _showSettingsOptions();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
+        );
         break;
     }
   }
@@ -78,63 +82,6 @@ class _DashboardPageState extends State<DashboardPage> {
         content: Text('$pageName page coming soon!'),
         backgroundColor: const Color(0xff3abeff),
       ),
-    );
-  }
-
-  void _showSettingsOptions() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color(0xff1b1f3b),
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: const Color(0xffffffff),
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 24),
-              ListTile(
-                leading: Icon(Icons.person, color: const Color(0xff3abeff)),
-                title: Text(
-                  'Profile',
-                  style: TextStyle(color: const Color(0xffffffff)),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToProtectedPage('/profile', 'Profile');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.settings, color: const Color(0xff3abeff)),
-                title: Text(
-                  'App Settings',
-                  style: TextStyle(color: const Color(0xffffffff)),
-                ),
-                onTap: () {
-                  Navigator.pop(context);
-                  _navigateToProtectedPage('/app-settings', 'App Settings');
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.logout, color: Colors.red),
-                title: Text('Logout', style: TextStyle(color: Colors.red)),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await _handleLogout();
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        );
-      },
     );
   }
 

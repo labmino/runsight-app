@@ -112,11 +112,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 color: const Color(0xff3abeff).withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Icon(
-                icon,
-                size: 24,
-                color: const Color(0xff3abeff),
-              ),
+              child: Icon(icon, size: 24, color: const Color(0xff3abeff)),
             ),
             const SizedBox(width: 16),
             Expanded(
@@ -143,11 +139,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            const Icon(
-              Icons.chevron_right,
-              color: Color(0xff888b94),
-              size: 24,
-            ),
+            const Icon(Icons.chevron_right, color: Color(0xff888b94), size: 24),
           ],
         ),
       ),

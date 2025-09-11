@@ -150,11 +150,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                   color: const Color(0xff3abeff).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: const Color(0xff3abeff),
-                ),
+                child: Icon(icon, size: 24, color: const Color(0xff3abeff)),
               ),
             ],
           ),
@@ -244,11 +240,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                   color: const Color(0xff3abeff).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(28),
                 ),
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: const Color(0xff3abeff),
-                ),
+                child: Icon(icon, size: 24, color: const Color(0xff3abeff)),
               ),
             ],
           ),
@@ -339,11 +331,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
         child: const Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.play_arrow,
-              size: 24,
-              color: Color(0xff1b1f3b),
-            ),
+            Icon(Icons.play_arrow, size: 24, color: Color(0xff1b1f3b)),
             SizedBox(width: 12),
             Text(
               'Test All Audio & Vibration',
@@ -426,9 +414,15 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
     );
 
     // Test sequence
-    Future.delayed(const Duration(seconds: 1), () => _playInstruction('turn_left'));
+    Future.delayed(
+      const Duration(seconds: 1),
+      () => _playInstruction('turn_left'),
+    );
     Future.delayed(const Duration(seconds: 3), () => _testVibration('turn'));
-    Future.delayed(const Duration(seconds: 4), () => _playInstruction('obstacle'));
+    Future.delayed(
+      const Duration(seconds: 4),
+      () => _playInstruction('obstacle'),
+    );
     Future.delayed(const Duration(seconds: 6), () => _testVibration('warning'));
     Future.delayed(const Duration(seconds: 7), () => _playInstruction('pace'));
   }

@@ -4,7 +4,8 @@ class UserPreferencesSettings extends StatefulWidget {
   const UserPreferencesSettings({super.key});
 
   @override
-  State<UserPreferencesSettings> createState() => _UserPreferencesSettingsState();
+  State<UserPreferencesSettings> createState() =>
+      _UserPreferencesSettingsState();
 }
 
 class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
@@ -112,7 +113,9 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
         height: 56,
         decoration: BoxDecoration(
           color: Colors.white,
-          border: isSelected ? Border.all(color: const Color(0xff3abeff), width: 2) : null,
+          border: isSelected
+              ? Border.all(color: const Color(0xff3abeff), width: 2)
+              : null,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -148,15 +151,13 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                 width: 24,
                 height: 24,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xff3abeff) : const Color(0xffe5e7eb),
+                  color: isSelected
+                      ? const Color(0xff3abeff)
+                      : const Color(0xffe5e7eb),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: isSelected
-                    ? const Icon(
-                        Icons.check,
-                        size: 16,
-                        color: Colors.white,
-                      )
+                    ? const Icon(Icons.check, size: 16, color: Colors.white)
                     : null,
               ),
             ],
@@ -297,14 +298,18 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
               width: 48,
               height: 28,
               decoration: BoxDecoration(
-                color: value ? const Color(0xff3abeff) : const Color(0xffe5e7eb),
+                color: value
+                    ? const Color(0xff3abeff)
+                    : const Color(0xffe5e7eb),
                 borderRadius: BorderRadius.circular(14),
               ),
               child: GestureDetector(
                 onTap: () => onChanged(!value),
                 child: AnimatedAlign(
                   duration: const Duration(milliseconds: 200),
-                  alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                  alignment: value
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
                   child: Container(
                     width: 20,
                     height: 20,
@@ -420,10 +425,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
               Navigator.pop(context);
               Navigator.pop(context);
             },
-            child: const Text(
-              'OK',
-              style: TextStyle(color: Color(0xff3abeff)),
-            ),
+            child: const Text('OK', style: TextStyle(color: Color(0xff3abeff))),
           ),
         ],
       ),
