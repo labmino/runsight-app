@@ -8,6 +8,8 @@ import '../../app_module/data/model/run.dart';
 import '../homepage/dashboard.dart';
 import '../authentication/login.dart';
 import '../device/device_pairing_screen.dart';
+import 'run_detail_page.dart';
+import '../settings/settings_page.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -64,8 +66,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
         );
         break;
       case 4:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings page coming soon!')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
         );
         break;
     }
@@ -304,80 +307,88 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Widget _buildRunCard(Run run) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xffffffff),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      run.title ?? 'Morning Run',
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: const Color(0xff1b1f3b),
-                        fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => RunDetailPage(run: run)),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        decoration: BoxDecoration(
+          color: const Color(0xffffffff),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        run.title ?? 'Morning Run',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: const Color(0xff1b1f3b),
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatTime(run.startedAt),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: const Color(0xff888b94),
+                      const SizedBox(height: 4),
+                      Text(
+                        _formatTime(run.startedAt),
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: const Color(0xff888b94),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Icon(Icons.more_vert, color: const Color(0xff888b94)),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildStatItem(
-                  icon: Icons.straighten,
-                  value: run.formattedDistance.split(' ')[0],
-                  unit: 'km',
-                  color: const Color(0xff3abeff),
-                ),
-                _buildStatItem(
-                  icon: Icons.timer,
-                  value: _formatDurationToMinutes(run.durationSeconds ?? 0),
-                  unit: 'min',
-                  color: const Color(0xff10b981),
-                ),
-                _buildStatItem(
-                  icon: Icons.speed,
-                  value: _calculatePace(
-                    run.distanceMeters ?? 0,
-                    run.durationSeconds ?? 0,
+                    ],
                   ),
-                  unit: 'min/km',
-                  color: const Color(0xfff59e0b),
-                ),
-                _buildStatItem(
-                  icon: Icons.local_fire_department,
-                  value: (run.caloriesBurned ?? 0).toString(),
-                  unit: 'cal',
-                  color: const Color(0xffef4444),
-                ),
-              ],
-            ),
-          ],
+                  Icon(Icons.chevron_right, color: const Color(0xff888b94)),
+                ],
+              ),
+
+              const SizedBox(height: 16),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildStatItem(
+                    icon: Icons.straighten,
+                    value: run.formattedDistance.split(' ')[0],
+                    unit: 'km',
+                    color: const Color(0xff3abeff),
+                  ),
+                  _buildStatItem(
+                    icon: Icons.timer,
+                    value: _formatDurationToMinutes(run.durationSeconds ?? 0),
+                    unit: 'min',
+                    color: const Color(0xff10b981),
+                  ),
+                  _buildStatItem(
+                    icon: Icons.speed,
+                    value: _calculatePace(
+                      run.distanceMeters ?? 0,
+                      run.durationSeconds ?? 0,
+                    ),
+                    unit: 'min/km',
+                    color: const Color(0xfff59e0b),
+                  ),
+                  _buildStatItem(
+                    icon: Icons.local_fire_department,
+                    value: (run.caloriesBurned ?? 0).toString(),
+                    unit: 'cal',
+                    color: const Color(0xffef4444),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

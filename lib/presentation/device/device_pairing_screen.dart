@@ -6,6 +6,7 @@ import '../../controller/auth_controller.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 import '../homepage/dashboard.dart';
 import '../authentication/login.dart';
+import '../settings/settings_page.dart';
 import 'pairing_code_page.dart';
 
 class DevicePairingScreen extends StatefulWidget {
@@ -107,8 +108,9 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
         );
         break;
       case 4:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings page coming soon!')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SettingsPage()),
         );
         break;
     }
