@@ -32,7 +32,7 @@ class DeviceController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final List<dynamic> devicesData = response['data'] ?? [];
         _devices = devicesData
             .map((device) => Device.fromJson(device))
@@ -71,10 +71,10 @@ class DeviceController extends ChangeNotifier {
         jsonEncode(registerRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final newDevice = Device.fromJson(response['data']);
-        _devices.insert(0, newDevice); 
-        _selectedDevice = newDevice; 
+        _devices.insert(0, newDevice);
+        _selectedDevice = newDevice;
 
         _isLoading = false;
         notifyListeners();
@@ -104,7 +104,7 @@ class DeviceController extends ChangeNotifier {
         jsonEncode(statusRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final index = _devices.indexWhere(
           (device) => device.deviceId == deviceId,
         );
@@ -135,7 +135,7 @@ class DeviceController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices/$deviceId/config';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         return DeviceConfig.fromJson(response['data']);
       } else {
         _errorMessage = response['message'] ?? 'Failed to get device config';
@@ -152,7 +152,7 @@ class DeviceController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices/$deviceId/config';
       final response = await request.postJson(url, jsonEncode(config.toJson()));
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         _errorMessage = null;
         notifyListeners();
         return true;
@@ -173,7 +173,7 @@ class DeviceController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices/$deviceId/sync';
       final response = await request.post(url, {});
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final index = _devices.indexWhere(
           (device) => device.deviceId == deviceId,
         );
@@ -202,9 +202,12 @@ class DeviceController extends ChangeNotifier {
   Future<bool> removeDevice(String deviceId) async {
     try {
       final url = '$baseUrl/mobile/devices/$deviceId';
-      final response = await request.post(url, {'_method': 'DELETE'});
+      final response = await request.postJson(
+        url,
+        jsonEncode({'_method': 'DELETE'}),
+      );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         _devices.removeWhere((device) => device.deviceId == deviceId);
         if (_selectedDevice?.deviceId == deviceId) {
           _selectedDevice = _devices.isNotEmpty ? _devices.first : null;
@@ -230,7 +233,7 @@ class DeviceController extends ChangeNotifier {
       final data = {'is_active': isActive};
       final response = await request.postJson(url, jsonEncode(data));
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final index = _devices.indexWhere(
           (device) => device.deviceId == deviceId,
         );

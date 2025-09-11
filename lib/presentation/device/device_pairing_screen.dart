@@ -6,6 +6,7 @@ import '../../controller/auth_controller.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 import '../homepage/dashboard.dart';
 import '../authentication/login.dart';
+import 'pairing_code_page.dart';
 
 class DevicePairingScreen extends StatefulWidget {
   const DevicePairingScreen({super.key});
@@ -15,7 +16,7 @@ class DevicePairingScreen extends StatefulWidget {
 }
 
 class _DevicePairingScreenState extends State<DevicePairingScreen> {
-  int _currentNavIndex = 2; 
+  int _currentNavIndex = 2;
 
   @override
   void initState() {
@@ -33,12 +34,45 @@ class _DevicePairingScreenState extends State<DevicePairingScreen> {
     pairingController.getConnectedDevices();
   }
 
-  void _connectDevice() {
+  void _connectDevice() async {
     final pairingController = Provider.of<DevicePairingController>(
       context,
       listen: false,
     );
-    pairingController.requestPairingCode();
+
+    print('DEBUG: Starting pairing code request...');
+    final pairingResponse = await pairingController.requestPairingCode();
+
+    print('DEBUG: Pairing response: $pairingResponse');
+    print('DEBUG: Current session: ${pairingController.currentSession}');
+    print('DEBUG: Error message: ${pairingController.errorMessage}');
+
+    if (pairingResponse != null) {
+      print('DEBUG: Navigating to pairing code page...');
+      // Navigate to pairing code page
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const PairingCodePage()),
+      );
+    } else {
+      print('DEBUG: Pairing response is null, showing error');
+      // Show error message
+      if (pairingController.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(pairingController.errorMessage!),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to generate pairing code. Please try again.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   void _onNavBarTap(int index) {

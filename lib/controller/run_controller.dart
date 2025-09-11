@@ -20,13 +20,21 @@ class RunController extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   bool get hasActiveRun => _currentRun != null && _currentRun!.endedAt == null;
 
-  Future<void> fetchRuns() async {
+  Future<void> fetchRuns({
+    int page = 1,
+    int limit = 10,
+    String? startDate,
+    String? endDate,
+  }) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final url = '$baseUrl/mobile/runs';
+      var url = '$baseUrl/mobile/runs?page=$page&limit=$limit';
+      if (startDate != null) url += '&start_date=$startDate';
+      if (endDate != null) url += '&end_date=$endDate';
+
       final response = await request.get(url);
 
       // Debug: Print response to understand its structure
@@ -37,18 +45,21 @@ class RunController extends ChangeNotifier {
       List<dynamic> runsData = [];
 
       if (response is Map<String, dynamic>) {
-        if (response['status'] == 'success') {
-          // Handle data that could be either a List or a single object
+        if (response['success'] == true) {
+          // Handle data that could be either a List or a pagination object
           final dynamic data = response['data'];
 
-          if (data is List) {
+          if (data is Map<String, dynamic> && data.containsKey('runs')) {
+            // Paginated response
+            runsData = data['runs'] ?? [];
+          } else if (data is List) {
             runsData = data;
           } else if (data is Map<String, dynamic>) {
             // If data is a single object, wrap it in a list
             runsData = [data];
           }
           // If data is null, runsData remains empty list
-        } else if (response['status'] == 'error') {
+        } else if (response['success'] == false) {
           // Server returned an error status
           if (response['message']?.toString().toLowerCase().contains(
                     'not found',
@@ -123,7 +134,7 @@ class RunController extends ChangeNotifier {
         jsonEncode(runRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final newRun = Run.fromJson(response['data']);
         _currentRun = newRun;
         _runs.insert(0, newRun);
@@ -157,7 +168,7 @@ class RunController extends ChangeNotifier {
 
       final response = await request.postJson(url, jsonEncode(data));
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final updatedRun = Run.fromJson(response['data']);
         if (_currentRun?.id == runId) {
           _currentRun = updatedRun;
@@ -187,12 +198,11 @@ class RunController extends ChangeNotifier {
   Future<Run?> updateRun(String runId, RunUpdateRequest updateRequest) async {
     try {
       final url = '$baseUrl/mobile/runs/$runId';
-      final response = await request.postJson(
-        url,
-        jsonEncode(updateRequest.toJson()),
-      );
+      final data = updateRequest.toJson();
+      data['_method'] = 'PATCH';
+      final response = await request.postJson(url, jsonEncode(data));
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final updatedRun = Run.fromJson(response['data']);
         if (_currentRun?.id == runId) {
           _currentRun = updatedRun;
@@ -219,9 +229,12 @@ class RunController extends ChangeNotifier {
   Future<bool> deleteRun(String runId) async {
     try {
       final url = '$baseUrl/mobile/runs/$runId';
-      final response = await request.post(url, {'_method': 'DELETE'});
+      final response = await request.postJson(
+        url,
+        jsonEncode({'_method': 'DELETE'}),
+      );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         if (_currentRun?.id == runId) {
           _currentRun = null;
         }
@@ -246,10 +259,28 @@ class RunController extends ChangeNotifier {
       final url = '$baseUrl/mobile/runs/$runId';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         return Run.fromJson(response['data']);
       } else {
         _errorMessage = response['message'] ?? 'Failed to get run details';
+        return null;
+      }
+    } catch (e) {
+      _errorMessage = 'Network error: ${e.toString()}';
+      return null;
+    }
+  }
+
+  // Add statistics endpoint
+  Future<Map<String, dynamic>?> getUserStatistics() async {
+    try {
+      final url = '$baseUrl/mobile/stats';
+      final response = await request.get(url);
+
+      if (response['success'] == true) {
+        return response['data'];
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to get statistics';
         return null;
       }
     } catch (e) {
@@ -269,7 +300,7 @@ class RunController extends ChangeNotifier {
         jsonEncode(metricsRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final aiMetrics = AIMetrics.fromJson(response['data']);
         notifyListeners();
         return aiMetrics;
@@ -290,7 +321,7 @@ class RunController extends ChangeNotifier {
       final url = '$baseUrl/mobile/runs/$runId/ai-metrics';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         return AIMetrics.fromJson(response['data']);
       } else {
         _errorMessage = response['message'] ?? 'Failed to get AI metrics';

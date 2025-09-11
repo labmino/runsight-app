@@ -27,28 +27,59 @@ class DevicePairingController extends ChangeNotifier {
 
     try {
       final url = '$baseUrl/mobile/pairing/request';
+      print('DEBUG: Requesting pairing code from: $url');
       final response = await request.post(url, {});
 
-      if (response['status'] == 'success') {
-        final pairingResponse = PairingResponse.fromJson(response['data']);
+      print('DEBUG: Raw response: $response');
+      print('DEBUG: Response type: ${response.runtimeType}');
+      print('DEBUG: Response keys: ${response.keys}');
+      print('DEBUG: Response success: ${response['success']}');
+      print('DEBUG: Response message: ${response['message']}');
+      print('DEBUG: Response data: ${response['data']}');
+
+      // Check if response contains pairing data - API uses "status": "success" not "success": true
+      if (response['success'] == true ||
+          response['status'] == 'success' ||
+          (response.containsKey('code') &&
+              response.containsKey('session_id'))) {
+        print('DEBUG: Success response, parsing data...');
+
+        // If data is nested under 'data' field, use that. Otherwise use response directly
+        final dataToparse = response['data'] ?? response;
+
+        // Ensure code is string for the model
+        final Map<String, dynamic> normalizedData = Map<String, dynamic>.from(
+          dataToparse,
+        );
+        if (normalizedData['code'] is int) {
+          normalizedData['code'] = normalizedData['code'].toString();
+        }
+
+        final pairingResponse = PairingResponse.fromJson(normalizedData);
+        print('DEBUG: Parsed pairing response: ${pairingResponse.toJson()}');
+
         _currentSession = PairingSession(
           id: pairingResponse.sessionId,
-          userId: '', 
+          userId: '',
           code: pairingResponse.code,
           status: PairingStatus.pending,
           expiresAt: pairingResponse.expiresAtDateTime,
           createdAt: DateTime.now(),
         );
+
+        print('DEBUG: Created session: ${_currentSession?.toJson()}');
         _isLoading = false;
         notifyListeners();
         return pairingResponse;
       } else {
+        print('DEBUG: Failed response');
         _errorMessage = response['message'] ?? 'Failed to request pairing code';
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } catch (e) {
+      print('DEBUG: Exception occurred: $e');
       _errorMessage = 'Network error: ${e.toString()}';
       _isLoading = false;
       notifyListeners();
@@ -58,10 +89,10 @@ class DevicePairingController extends ChangeNotifier {
 
   Future<PairingStatusResponse?> checkPairingStatus(String sessionId) async {
     try {
-      final url = '$baseUrl/mobile/pairing/status/$sessionId';
+      final url = '$baseUrl/mobile/pairing/$sessionId/status';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         final statusResponse = PairingStatusResponse.fromJson(response['data']);
 
         if (_currentSession != null && _currentSession!.id == sessionId) {
@@ -78,7 +109,7 @@ class DevicePairingController extends ChangeNotifier {
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             );
-            _currentSession = null; 
+            _currentSession = null;
           }
         }
 
@@ -101,7 +132,7 @@ class DevicePairingController extends ChangeNotifier {
       final url = '$baseUrl/mobile/pairing/cancel/$sessionId';
       final response = await request.post(url, {});
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         _currentSession = null;
         _errorMessage = null;
         notifyListeners();
@@ -123,15 +154,14 @@ class DevicePairingController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         final List<dynamic> devicesData = response['data'] ?? [];
         final devices = devicesData
             .map((device) => Device.fromJson(device))
             .toList();
 
         if (devices.isNotEmpty) {
-          _pairedDevice =
-              devices.first;
+          _pairedDevice = devices.first;
         }
 
         notifyListeners();
@@ -148,10 +178,13 @@ class DevicePairingController extends ChangeNotifier {
 
   Future<bool> unpairDevice(String deviceId) async {
     try {
-      final url = '$baseUrl/mobile/devices/$deviceId/unpair';
-      final response = await request.post(url, {});
+      final url = '$baseUrl/mobile/devices/$deviceId';
+      final response = await request.postJson(
+        url,
+        jsonEncode({'_method': 'DELETE'}),
+      );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         if (_pairedDevice?.deviceId == deviceId) {
           _pairedDevice = null;
         }
@@ -175,7 +208,7 @@ class DevicePairingController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices/$deviceId/config';
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         return DeviceConfig.fromJson(response['data']);
       } else {
         _errorMessage = response['message'] ?? 'Failed to get device config';
@@ -192,7 +225,7 @@ class DevicePairingController extends ChangeNotifier {
       final url = '$baseUrl/mobile/devices/$deviceId/config';
       final response = await request.postJson(url, jsonEncode(config.toJson()));
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true || response['status'] == 'success') {
         _errorMessage = null;
         notifyListeners();
         return true;

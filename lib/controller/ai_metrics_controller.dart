@@ -33,7 +33,7 @@ class AIMetricsController extends ChangeNotifier {
 
       final response = await request.get(url);
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         if (runId != null) {
           // Single AI metrics for specific run
           _currentMetrics = AIMetrics.fromJson(response['data']);
@@ -77,7 +77,7 @@ class AIMetricsController extends ChangeNotifier {
         jsonEncode(metricsRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final newMetrics = AIMetrics.fromJson(response['data']);
         _currentMetrics = newMetrics;
         _aiMetrics.insert(0, newMetrics); // Add to beginning of list
@@ -110,7 +110,7 @@ class AIMetricsController extends ChangeNotifier {
         jsonEncode(updateRequest.toJson()),
       );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         final updatedMetrics = AIMetrics.fromJson(response['data']);
 
         // Update current metrics
@@ -143,9 +143,12 @@ class AIMetricsController extends ChangeNotifier {
   Future<bool> deleteAIMetrics(String metricsId) async {
     try {
       final url = '$baseUrl/mobile/ai-metrics/$metricsId';
-      final response = await request.post(url, {'_method': 'DELETE'});
+      final response = await request.postJson(
+        url,
+        jsonEncode({'_method': 'DELETE'}),
+      );
 
-      if (response['status'] == 'success') {
+      if (response['success'] == true) {
         // Remove from current metrics if it's the same
         if (_currentMetrics?.id == metricsId) {
           _currentMetrics = null;
