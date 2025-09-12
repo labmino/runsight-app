@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:text_to_speech/text_to_speech.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'active_run_page.dart';
 
 class RunBriefingPage extends StatefulWidget {
@@ -19,7 +19,7 @@ class RunBriefingPage extends StatefulWidget {
 }
 
 class _RunBriefingPageState extends State<RunBriefingPage> {
-  TextToSpeech tts = TextToSpeech();
+  FlutterTts tts = FlutterTts();
   bool _isPlaying = false;
   bool _isCompleted = false;
 
@@ -69,9 +69,12 @@ class _RunBriefingPageState extends State<RunBriefingPage> {
 
   Future<void> _initTts() async {
     try {
-      await tts.setRate(0.8);
+      await tts.setSpeechRate(
+        0.5,
+      ); // flutter_tts uses 0.0-1.0 range where 0.5 is normal speed
       await tts.setVolume(0.8);
       await tts.setPitch(1.0);
+      await tts.setLanguage("en-US");
     } catch (e) {
       print('TTS initialization error: $e');
     }
@@ -113,14 +116,17 @@ Tap the start button when you're ready to begin your guided run.
           _isPlaying = true;
         });
 
-        await tts.speak(_briefingText);
+        // Set up completion handler
+        tts.setCompletionHandler(() {
+          if (mounted) {
+            setState(() {
+              _isPlaying = false;
+              _isCompleted = true;
+            });
+          }
+        });
 
-        if (mounted) {
-          setState(() {
-            _isPlaying = false;
-            _isCompleted = true;
-          });
-        }
+        await tts.speak(_briefingText);
       }
     } catch (e) {
       print('TTS error: $e');
