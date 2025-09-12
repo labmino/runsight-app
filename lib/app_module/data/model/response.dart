@@ -3,11 +3,7 @@ class UserResponse {
   final String message;
   final String? username;
 
-  UserResponse({
-    required this.status,
-    required this.message,
-    this.username,
-  });
+  UserResponse({required this.status, required this.message, this.username});
 
   factory UserResponse.fromJson(Map<String, dynamic> json) {
     return UserResponse(

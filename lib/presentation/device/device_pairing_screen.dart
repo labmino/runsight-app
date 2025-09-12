@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:labmino_app/presentation/history/history_screen.dart';
 import 'package:provider/provider.dart';
-import '../../controller/device_pairing_controller.dart';
+import 'package:runsight_app/presentation/history/history_screen.dart';
+
 import '../../controller/auth_controller.dart';
+import '../../controller/device_pairing_controller.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
-import '../homepage/dashboard.dart';
 import '../authentication/login.dart';
-import '../settings/settings_page.dart';
 import '../community/community_page.dart';
+import '../homepage/dashboard.dart';
 import '../run/setup_run_page.dart';
+import '../settings/settings_page.dart';
 import 'pairing_code_page.dart';
 
 class DevicePairingScreen extends StatefulWidget {

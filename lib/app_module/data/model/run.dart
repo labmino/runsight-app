@@ -1,8 +1,10 @@
+import 'dart:convert';
+
 import 'user.dart';
 
 class Run {
   final String id;
-  final String userId;
+  final String? userId;
   final String deviceId;
   final String sessionId;
   final String? title;
@@ -19,13 +21,14 @@ class Run {
   final double? startLongitude;
   final double? endLatitude;
   final double? endLongitude;
+  final String? routeData;
   final DateTime createdAt;
   final DateTime updatedAt;
   final User? user;
 
   Run({
     required this.id,
-    required this.userId,
+    this.userId,
     required this.deviceId,
     required this.sessionId,
     this.title,
@@ -42,37 +45,65 @@ class Run {
     this.startLongitude,
     this.endLatitude,
     this.endLongitude,
+    this.routeData,
     required this.createdAt,
     required this.updatedAt,
     this.user,
   });
 
   factory Run.fromJson(Map<String, dynamic> json) {
-    return Run(
-      id: json['id'],
-      userId: json['user_id'],
-      deviceId: json['device_id'],
-      sessionId: json['session_id'],
-      title: json['title'],
-      notes: json['notes'],
-      startedAt: DateTime.parse(json['started_at']),
-      endedAt: json['ended_at'] != null
-          ? DateTime.parse(json['ended_at'])
-          : null,
-      durationSeconds: json['duration_seconds'],
-      distanceMeters: json['distance_meters']?.toDouble(),
-      avgSpeedKmh: json['avg_speed_kmh']?.toDouble(),
-      maxSpeedKmh: json['max_speed_kmh']?.toDouble(),
-      caloriesBurned: json['calories_burned'],
-      stepsCount: json['steps_count'],
-      startLatitude: json['start_latitude']?.toDouble(),
-      startLongitude: json['start_longitude']?.toDouble(),
-      endLatitude: json['end_latitude']?.toDouble(),
-      endLongitude: json['end_longitude']?.toDouble(),
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-      user: json['user'] != null ? User.fromJson(json['user']) : null,
-    );
+    try {
+      print(
+        'Run.fromJson - steps_count: ${json['steps_count']} (type: ${json['steps_count'].runtimeType})',
+      );
+      print(
+        'Run.fromJson - calories_burned: ${json['calories_burned']} (type: ${json['calories_burned'].runtimeType})',
+      );
+      print('Run.fromJson - route_data exists: ${json['route_data'] != null}');
+      print('Run.fromJson - notes: ${json['notes']}');
+
+      return Run(
+        id: json['id'] ?? '',
+        userId: json['user_id'],
+        deviceId: json['device_id'] ?? '',
+        sessionId: json['session_id'] ?? '',
+        title: json['title'],
+        notes: json['notes'],
+        startedAt: DateTime.parse(json['started_at']),
+        endedAt:
+            json['ended_at'] != null && json['ended_at'].toString().isNotEmpty
+            ? DateTime.parse(json['ended_at'])
+            : null,
+        durationSeconds: json['duration_seconds'] is String
+            ? int.tryParse(json['duration_seconds'])
+            : json['duration_seconds'],
+        distanceMeters: (json['distance_meters'] as num?)?.toDouble(),
+        avgSpeedKmh: (json['avg_speed_kmh'] as num?)?.toDouble(),
+        maxSpeedKmh: (json['max_speed_kmh'] as num?)?.toDouble(),
+        caloriesBurned: json['calories_burned'] is String
+            ? int.tryParse(json['calories_burned'])
+            : json['calories_burned'],
+        stepsCount: json['steps_count'] is String
+            ? int.tryParse(json['steps_count'])
+            : json['steps_count'],
+        startLatitude: (json['start_latitude'] as num?)?.toDouble(),
+        startLongitude: (json['start_longitude'] as num?)?.toDouble(),
+        endLatitude: (json['end_latitude'] as num?)?.toDouble(),
+        endLongitude: (json['end_longitude'] as num?)?.toDouble(),
+        routeData: json['route_data'],
+        createdAt: DateTime.parse(json['created_at']),
+        updatedAt:
+            json['updated_at'] != null &&
+                json['updated_at'].toString().isNotEmpty
+            ? DateTime.parse(json['updated_at'])
+            : DateTime.parse(json['created_at']), // Use created_at as fallback
+        user: json['user'] != null ? User.fromJson(json['user']) : null,
+      );
+    } catch (e) {
+      print('Error parsing Run from JSON: $e');
+      print('JSON data: $json');
+      rethrow;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -95,6 +126,7 @@ class Run {
       'start_longitude': startLongitude,
       'end_latitude': endLatitude,
       'end_longitude': endLongitude,
+      'route_data': routeData,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'user': user?.toJson(),
@@ -126,6 +158,43 @@ class Run {
   String get formattedMaxSpeed {
     if (maxSpeedKmh == null) return '0.0 km/h';
     return '${maxSpeedKmh!.toStringAsFixed(1)} km/h';
+  }
+
+  List<Waypoint> get waypoints {
+    if (routeData == null || routeData!.isEmpty) {
+      print('Run waypoints - routeData is null or empty');
+      return [];
+    }
+    try {
+      print(
+        'Run waypoints - Parsing routeData: ${routeData!.substring(0, routeData!.length > 100 ? 100 : routeData!.length)}...',
+      );
+      final Map<String, dynamic> routeJson = jsonDecode(routeData!);
+      final List<dynamic> waypointsJson = routeJson['waypoints'] ?? [];
+      print('Run waypoints - Found ${waypointsJson.length} waypoints in JSON');
+      final result = waypointsJson
+          .map((json) => Waypoint.fromJson(json))
+          .toList();
+      print('Run waypoints - Parsed ${result.length} waypoint objects');
+      return result;
+    } catch (e) {
+      print('Error parsing route data: $e');
+      print('RouteData content: $routeData');
+      return [];
+    }
+  }
+
+  int get totalWaypoints {
+    if (routeData == null || routeData!.isEmpty) return 0;
+    try {
+      final Map<String, dynamic> routeJson = jsonDecode(routeData!);
+      final summary = routeJson['summary'];
+      return summary != null
+          ? (summary['total_points'] ?? 0)
+          : waypoints.length;
+    } catch (e) {
+      return 0;
+    }
   }
 }
 
@@ -272,6 +341,38 @@ class RunUpdateRequest {
       endLatitude: json['end_latitude']?.toDouble(),
       endLongitude: json['end_longitude']?.toDouble(),
     );
+  }
+}
+
+class Waypoint {
+  final double lat;
+  final double lng;
+  final double speed;
+  final DateTime timestamp;
+
+  Waypoint({
+    required this.lat,
+    required this.lng,
+    required this.speed,
+    required this.timestamp,
+  });
+
+  factory Waypoint.fromJson(Map<String, dynamic> json) {
+    return Waypoint(
+      lat: (json['lat'] as num).toDouble(),
+      lng: (json['lng'] as num).toDouble(),
+      speed: (json['speed'] as num).toDouble(),
+      timestamp: DateTime.parse(json['timestamp']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'lat': lat,
+      'lng': lng,
+      'speed': speed,
+      'timestamp': timestamp.toIso8601String(),
+    };
   }
 }
 

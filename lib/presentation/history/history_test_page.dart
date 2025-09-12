@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../history/run_detail_page.dart';
+
 import '../../app_module/data/model/run.dart';
+import '../history/run_detail_page.dart';
 
 class HistoryTestPage extends StatelessWidget {
   const HistoryTestPage({super.key});

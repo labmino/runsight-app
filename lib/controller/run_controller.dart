@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import '../app_module/data/model/run.dart';
+
 import '../app_module/data/model/ai_metrics.dart';
+import '../app_module/data/model/run.dart';
 
 class RunController extends ChangeNotifier {
   List<Run> _runs = [];
@@ -38,28 +40,36 @@ class RunController extends ChangeNotifier {
       final response = await request.get(url);
 
       // Debug: Print response to understand its structure
+      print('RunController - Fetching runs from: $url');
       print('RunController - Response type: ${response.runtimeType}');
-      print('RunController - Response: $response');
+      if (response is Map<String, dynamic>) {
+        print('RunController - Response status: ${response['status']}');
+        print('RunController - Response success: ${response['success']}');
+      }
 
       // Handle different response formats
       List<dynamic> runsData = [];
 
       if (response is Map<String, dynamic>) {
-        if (response['success'] == true) {
+        if (response['success'] == true || response['status'] == 'success') {
           // Handle data that could be either a List or a pagination object
           final dynamic data = response['data'];
 
           if (data is Map<String, dynamic> && data.containsKey('runs')) {
             // Paginated response
             runsData = data['runs'] ?? [];
+            print('RunController - Found paginated runs: ${runsData.length}');
           } else if (data is List) {
             runsData = data;
+            print('RunController - Found list runs: ${runsData.length}');
           } else if (data is Map<String, dynamic>) {
             // If data is a single object, wrap it in a list
             runsData = [data];
+            print('RunController - Found single run, wrapped in list');
           }
           // If data is null, runsData remains empty list
-        } else if (response['success'] == false) {
+        } else if (response['success'] == false ||
+            response['status'] == 'error') {
           // Server returned an error status
           if (response['message']?.toString().toLowerCase().contains(
                     'not found',
@@ -85,13 +95,17 @@ class RunController extends ChangeNotifier {
       // If response is neither Map nor List, runsData remains empty
 
       // Convert to Run objects
+      print(
+        'RunController - Converting ${runsData.length} items to Run objects',
+      );
       _runs = runsData
           .map((runData) {
             try {
-              return Run.fromJson(runData);
+              final run = Run.fromJson(runData);
+              return run;
             } catch (e) {
-              print('Error parsing run data: $e');
-              print('Run data: $runData');
+              print('RunController - Error parsing run data: $e');
+              print('RunController - Failed run data: $runData');
               return null;
             }
           })
@@ -103,6 +117,9 @@ class RunController extends ChangeNotifier {
       _currentRun = _runs.isNotEmpty && _runs.first.endedAt == null
           ? _runs.first
           : null;
+
+      print('RunController - Final result: ${_runs.length} runs loaded');
+      print('RunController - Current run: ${_currentRun?.id}');
 
       _isLoading = false;
       notifyListeners();
@@ -257,15 +274,28 @@ class RunController extends ChangeNotifier {
   Future<Run?> getRunDetails(String runId) async {
     try {
       final url = '$baseUrl/mobile/runs/$runId';
+      print('RunController - Fetching run details from: $url');
       final response = await request.get(url);
 
-      if (response['success'] == true) {
-        return Run.fromJson(response['data']);
+      print(
+        'RunController - getRunDetails response type: ${response.runtimeType}',
+      );
+      print('RunController - getRunDetails response: $response');
+
+      if (response['success'] == true || response['status'] == 'success') {
+        print('RunController - Parsing detailed run data');
+        final detailedRun = Run.fromJson(response['data']);
+        print('RunController - Detailed run parsed successfully');
+        return detailedRun;
       } else {
+        print(
+          'RunController - Failed to get run details: ${response['message']}',
+        );
         _errorMessage = response['message'] ?? 'Failed to get run details';
         return null;
       }
     } catch (e) {
+      print('RunController - Error getting run details: $e');
       _errorMessage = 'Network error: ${e.toString()}';
       return null;
     }

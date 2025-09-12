@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:grouped_list/grouped_list.dart';
-import '../../controller/run_controller.dart';
-import '../../controller/auth_controller.dart';
-import '../../widgets/custom_bottom_nav_bar.dart';
+import 'package:provider/provider.dart';
+
 import '../../app_module/data/model/run.dart';
-import '../homepage/dashboard.dart';
+import '../../controller/auth_controller.dart';
+import '../../controller/run_controller.dart';
+import '../../widgets/custom_bottom_nav_bar.dart';
 import '../authentication/login.dart';
-import '../device/device_pairing_screen.dart';
-import 'run_detail_page.dart';
-import '../settings/settings_page.dart';
 import '../community/community_page.dart';
+import '../device/device_pairing_screen.dart';
+import '../homepage/dashboard.dart';
+import '../settings/settings_page.dart';
+import 'run_detail_page.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -130,7 +131,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     style: TextStyle(
                       decoration: TextDecoration.none,
                       fontSize: 22,
-                      color: const Color(0xffffffff),
+                      color: Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -138,7 +139,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Icon(
                   Icons.filter_list,
                   size: 24,
-                  color: const Color(0xffffffff),
+                  color: Colors.white,
                 ),
               ],
             ),
@@ -177,14 +178,14 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 Icon(
                   Icons.error_outline,
                   size: 64,
-                  color: const Color(0xff888b94),
+                  color: const Color(0xffcccccc),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'Error loading history',
                   style: TextStyle(
                     fontSize: 18,
-                    color: const Color(0xffffffff),
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -194,7 +195,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: const Color(0xff888b94),
+                    color: const Color(0xffcccccc),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -240,7 +241,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               'No Running History',
               style: TextStyle(
                 fontSize: 24,
-                color: const Color(0xffffffff),
+                color: const Color(0x193abeff),
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -296,7 +297,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget _buildDateSeparator(String dateGroup) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
       child: Text(
         dateGroup,
         style: TextStyle(
@@ -319,7 +320,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         decoration: BoxDecoration(
-          color: const Color(0xffffffff),
+          color: const Color(0x193abeff),
           borderRadius: BorderRadius.circular(16),
         ),
         child: Padding(
@@ -337,7 +338,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         run.title ?? 'Morning Run',
                         style: TextStyle(
                           fontSize: 16,
-                          color: const Color(0xff1b1f3b),
+                          color: Colors.white,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -346,12 +347,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
                         _formatTime(run.startedAt),
                         style: TextStyle(
                           fontSize: 14,
-                          color: const Color(0xff888b94),
+                          color: const Color(0xffcccccc),
                         ),
                       ),
                     ],
                   ),
-                  Icon(Icons.chevron_right, color: const Color(0xff888b94)),
+                  Icon(Icons.chevron_right, color: const Color(0xffcccccc)),
                 ],
               ),
 
@@ -418,13 +419,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
           value,
           style: TextStyle(
             fontSize: 16,
-            color: const Color(0xff1b1f3b),
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
         Text(
           unit,
-          style: TextStyle(fontSize: 12, color: const Color(0xff888b94)),
+          style: TextStyle(fontSize: 12, color: const Color(0xffcccccc)),
         ),
       ],
     );
