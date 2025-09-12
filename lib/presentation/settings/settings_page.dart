@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'voice_navigation_settings.dart';
-import 'audio_preview_settings.dart';
-import 'user_preferences_settings.dart';
+
 import '../../controller/auth_controller.dart';
 import '../authentication/login.dart';
+import 'audio_preview_settings.dart';
+import 'user_preferences_settings.dart';
+import 'voice_navigation_settings.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -129,7 +130,7 @@ class _SettingsPageState extends State<SettingsPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text('Logout', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Are you sure you want to logout?',
@@ -190,7 +191,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -213,7 +214,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     title,
                     style: const TextStyle(
                       fontSize: 16,
-                      color: Color(0xff1b1f3b),
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -222,7 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     subtitle,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xff666666),
+                      color: const Color(0xffcccccc),
                       fontWeight: FontWeight.normal,
                     ),
                   ),

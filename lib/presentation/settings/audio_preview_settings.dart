@@ -18,7 +18,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
         title: const Text(
           'Audio Preview',
           style: TextStyle(
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontSize: 22,
             fontWeight: FontWeight.normal,
           ),
@@ -71,7 +71,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
           'Voice Instructions Preview',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -110,7 +110,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
       onTap: onPlay,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -126,7 +126,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -135,7 +135,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                       instruction,
                       style: const TextStyle(
                         fontSize: 14,
-                        color: Color(0xff666666),
+                        color: const Color(0xffcccccc),
                         fontWeight: FontWeight.normal,
                       ),
                       maxLines: 2,
@@ -169,7 +169,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
           'Vibration Patterns',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -201,7 +201,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
       onTap: onTest,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Padding(
@@ -217,7 +217,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -226,7 +226,7 @@ class _AudioPreviewSettingsState extends State<AudioPreviewSettings> {
                       description,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Color(0xff666666),
+                        color: const Color(0xffcccccc),
                         fontWeight: FontWeight.normal,
                       ),
                     ),

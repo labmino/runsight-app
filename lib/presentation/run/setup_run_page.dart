@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'run_briefing_page.dart';
 
 class SetupRunPage extends StatefulWidget {
@@ -71,7 +72,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
             style: const TextStyle(
               decoration: TextDecoration.none,
               fontSize: 28,
-              color: Color(0xffffffff),
+              color: Color(0x193abeff),
               fontWeight: FontWeight.w600,
             ),
             maxLines: 1,
@@ -92,7 +93,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 18,
-            color: Color(0xffffffff),
+            color: Color(0x193abeff),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -156,7 +157,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
                         fontSize: 16,
                         color: isSelected
                             ? const Color(0xff3abeff)
-                            : const Color(0xffffffff),
+                            : const Color(0x193abeff),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -197,7 +198,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 18,
-            color: Color(0xffffffff),
+            color: Color(0x193abeff),
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -246,7 +247,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
                     style: const TextStyle(
                       decoration: TextDecoration.none,
                       fontSize: 16,
-                      color: Color(0xffffffff),
+                      color: Color(0x193abeff),
                       fontWeight: FontWeight.w600,
                     ),
                   ),

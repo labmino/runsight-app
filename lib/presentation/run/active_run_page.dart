@@ -1,10 +1,12 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:provider/provider.dart';
-import '../../controller/run_controller.dart';
-import '../../app_module/data/model/run.dart';
-import 'run_summary_page.dart';
 import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../app_module/data/model/run.dart';
+import '../../controller/run_controller.dart';
+import 'run_summary_page.dart';
 
 class ActiveRunPage extends StatefulWidget {
   final String selectedMode;
@@ -390,7 +392,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text('End Run?', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Are you sure you want to end your current run session?',
@@ -423,7 +425,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text(
           'Emergency SOS',
           style: TextStyle(color: Color(0xffff4f58)),
@@ -458,7 +460,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
   void _showSettings() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: const Color(0xff2a2e45),
+      backgroundColor: const Color(0x193abeff),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -609,7 +611,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text(
           'Voice Settings',
           style: TextStyle(color: Colors.white),
@@ -654,7 +656,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text(
           'GPS Settings',
           style: TextStyle(color: Colors.white),
@@ -696,7 +698,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text(
           'Display Settings',
           style: TextStyle(color: Colors.white),
@@ -735,7 +737,7 @@ class _ActiveRunPageState extends State<ActiveRunPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text(
           'Emergency Settings',
           style: TextStyle(color: Colors.white),

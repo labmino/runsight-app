@@ -23,7 +23,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
         title: const Text(
           'Voice Navigation',
           style: TextStyle(
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontSize: 22,
             fontWeight: FontWeight.normal,
           ),
@@ -78,7 +78,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           'Voice Type',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -113,7 +113,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           border: isSelected
               ? Border.all(color: const Color(0xff3abeff), width: 2)
               : null,
@@ -132,7 +132,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                       name,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -141,7 +141,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                       description,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Color(0xff666666),
+                        color: const Color(0xffcccccc),
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -177,7 +177,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           'Language',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -186,7 +186,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           onTap: _showLanguageSelector,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0x193abeff),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
@@ -198,14 +198,14 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                       selectedLanguage,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
                   ),
                   const Icon(
                     Icons.expand_more,
-                    color: Color(0xff666666),
+                    color: const Color(0xffcccccc),
                     size: 24,
                   ),
                 ],
@@ -225,7 +225,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           'Voice Volume',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -233,7 +233,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: const Color(0x193abeff),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Column(
@@ -275,7 +275,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
           'Guidance Sensitivity',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -312,7 +312,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
       onTap: () => setState(() => selectedSensitivity = value),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           border: isSelected
               ? Border.all(color: const Color(0xff3abeff), width: 2)
               : null,
@@ -331,7 +331,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -340,7 +340,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                       description,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Color(0xff666666),
+                        color: const Color(0xffcccccc),
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -361,7 +361,7 @@ class _VoiceNavigationSettingsState extends State<VoiceNavigationSettings> {
                     width: 16,
                     height: 16,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0x193abeff),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),

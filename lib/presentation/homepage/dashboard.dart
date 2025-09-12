@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../controller/auth_controller.dart';
-import '../../controller/run_controller.dart';
 import '../../controller/device_pairing_controller.dart';
+import '../../controller/run_controller.dart';
 import '../../widgets/custom_bottom_nav_bar.dart';
 import '../authentication/login.dart';
-import '../device/device_pairing_screen.dart';
-import '../run/setup_run_page.dart';
-import '../history/history_screen.dart';
-import '../settings/settings_page.dart';
 import '../community/community_page.dart';
+import '../device/device_pairing_screen.dart';
+import '../history/history_screen.dart';
+import '../run/setup_run_page.dart';
+import '../settings/settings_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -173,7 +174,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   style: TextStyle(
                     decoration: TextDecoration.none,
                     fontSize: 28,
-                    color: const Color(0xffffffff),
+                    color: Colors.white,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -217,7 +218,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   style: TextStyle(
                     decoration: TextDecoration.none,
                     fontSize: 16,
-                    color: const Color(0xff3abeff),
+                    color: Colors.white,
                     fontWeight: FontWeight.normal,
                   ),
                 ),
@@ -252,20 +253,20 @@ class _DashboardPageState extends State<DashboardPage> {
                         Icon(
                           Icons.directions_run,
                           size: 48,
-                          color: const Color(0xff888b94),
+                          color: const Color(0xffcccccc),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           'No runs yet',
                           style: TextStyle(
-                            color: const Color(0xff888b94),
+                            color: const Color(0xffcccccc),
                             fontSize: 16,
                           ),
                         ),
                         Text(
                           'Start your first run today!',
                           style: TextStyle(
-                            color: const Color(0xff888b94),
+                            color: const Color(0xffcccccc),
                             fontSize: 14,
                           ),
                         ),
@@ -290,7 +291,7 @@ class _DashboardPageState extends State<DashboardPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 24,
-            color: const Color(0xffffffff),
+            color: Colors.white,
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -300,7 +301,7 @@ class _DashboardPageState extends State<DashboardPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 12,
-            color: const Color(0xff888b94),
+            color: const Color(0xffcccccc),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -341,7 +342,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       style: TextStyle(
                         decoration: TextDecoration.none,
                         fontSize: 16,
-                        color: const Color(0xffffffff),
+                        color: const Color(0xff3abeff),
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -362,7 +363,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   width: double.infinity,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: const Color(0xff888b94),
+                    color: const Color(0xffcccccc),
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: FractionallySizedBox(
@@ -385,7 +386,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   style: TextStyle(
                     decoration: TextDecoration.none,
                     fontSize: 14,
-                    color: const Color(0xff888b94),
+                    color: const Color(0xffcccccc),
                     fontWeight: FontWeight.normal,
                   ),
                 ),

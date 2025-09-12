@@ -24,7 +24,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
         title: const Text(
           'User Preferences',
           style: TextStyle(
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontSize: 22,
             fontWeight: FontWeight.normal,
           ),
@@ -77,7 +77,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
           'Weekly Running Goal',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -114,7 +114,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
       onTap: () => setState(() => selectedWeeklyGoal = value),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: const Color(0x193abeff),
           border: isSelected
               ? Border.all(color: const Color(0xff3abeff), width: 2)
               : null,
@@ -133,7 +133,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                       title,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -142,7 +142,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                       description,
                       style: const TextStyle(
                         fontSize: 12,
-                        color: Color(0xff666666),
+                        color: const Color(0xffcccccc),
                         fontWeight: FontWeight.normal,
                       ),
                     ),
@@ -177,7 +177,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
           'Preferred Running Mode',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -186,7 +186,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
           onTap: _showRunningModeSelector,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0x193abeff),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Padding(
@@ -198,14 +198,14 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                       selectedRunningMode,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xff1b1f3b),
+                        color: Colors.white,
                         fontWeight: FontWeight.normal,
                       ),
                     ),
                   ),
                   const Icon(
                     Icons.expand_more,
-                    color: Color(0xff666666),
+                    color: const Color(0xffcccccc),
                     size: 24,
                   ),
                 ],
@@ -225,7 +225,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
           'Daily Reminders',
           style: TextStyle(
             fontSize: 16,
-            color: Colors.white,
+            color: const Color(0x193abeff),
             fontWeight: FontWeight.normal,
           ),
         ),
@@ -287,7 +287,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                     description,
                     style: const TextStyle(
                       fontSize: 12,
-                      color: Color(0xff666666),
+                      color: const Color(0xffcccccc),
                       fontWeight: FontWeight.normal,
                     ),
                   ),
@@ -315,7 +315,7 @@ class _UserPreferencesSettingsState extends State<UserPreferencesSettings> {
                     height: 20,
                     margin: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0x193abeff),
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
