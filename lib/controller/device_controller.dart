@@ -1,6 +1,8 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
+
 import '../app_module/data/model/device.dart';
 
 class DeviceController extends ChangeNotifier {

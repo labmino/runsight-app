@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+
 import '../homepage/dashboard.dart';
 
 class RunSummaryPage extends StatelessWidget {
   final String selectedMode;
   final Duration totalTime;
   final double distanceKm;
-  final double averagePace; 
+  final double averagePace;
   final int calories;
   final List<String> achievements;
 

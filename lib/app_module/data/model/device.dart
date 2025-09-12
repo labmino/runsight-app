@@ -1,5 +1,5 @@
-import 'user.dart';
 import 'run.dart';
+import 'user.dart';
 
 class Device {
   final String id;
@@ -123,8 +123,7 @@ class Device {
   bool get isOnline {
     if (lastSyncAt == null) return false;
     final difference = DateTime.now().difference(lastSyncAt!);
-    return difference.inMinutes <=
-        5; 
+    return difference.inMinutes <= 5;
   }
 
   ConnectionStatus get connectionStatus {

@@ -102,7 +102,7 @@ class _CommunityPageState extends State<CommunityPage> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: const Color(0xff2a2e45),
+                    color: const Color(0x193abeff),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
@@ -143,7 +143,7 @@ class _CommunityPageState extends State<CommunityPage> {
   Widget _buildPostCard(CommunityPost post) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xff2a2e45),
+        color: const Color(0x193abeff),
         borderRadius: BorderRadius.circular(20),
       ),
       padding: const EdgeInsets.all(20),
@@ -388,7 +388,7 @@ class _CommunityPageState extends State<CommunityPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xff2a2e45),
+        backgroundColor: const Color(0x193abeff),
         title: const Text('Comments', style: TextStyle(color: Colors.white)),
         content: const Text(
           'Comment feature coming soon!',

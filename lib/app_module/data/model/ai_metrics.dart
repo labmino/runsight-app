@@ -207,7 +207,7 @@ class AIMetricsRequest {
 
   AIMetrics toModel(String runId) {
     return AIMetrics(
-      id: '', 
+      id: '',
       runId: runId,
       totalFramesProcessed: totalFrames,
       totalObstaclesDetected: obstaclesDetected,
@@ -250,7 +250,7 @@ class AIMetricsRequest {
       return 'Obstacles detected cannot be negative';
     }
 
-    return null; 
+    return null;
   }
 }
 

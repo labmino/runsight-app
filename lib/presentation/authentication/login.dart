@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../controller/auth_controller.dart';
+
 import '../../app_module/data/model/user.dart';
-import 'register.dart';
+import '../../controller/auth_controller.dart';
 import '../homepage/dashboard.dart';
+import 'register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

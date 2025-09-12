@@ -222,7 +222,6 @@ class PairingDeviceInfo {
   }
 }
 
-
 enum PairingStatus { pending, paired, expired }
 
 extension PairingStatusExtension on PairingStatus {
