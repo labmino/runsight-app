@@ -1,4 +1,4 @@
-package com.example.labmino_app
+package com.example.runsight_app
 
 import io.flutter.embedding.android.FlutterActivity
 

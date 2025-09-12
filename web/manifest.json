@@ -1,6 +1,6 @@
 {
-    "name": "labmino_app",
-    "short_name": "labmino_app",
+    "name": "runsight_app",
+    "short_name": "runsight_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

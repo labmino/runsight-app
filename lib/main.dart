@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:labmino_app/presentation/authentication/login.dart';
-import 'package:labmino_app/presentation/homepage/dashboard.dart';
+import 'package:runsight_app/presentation/authentication/login.dart';
+import 'package:runsight_app/presentation/homepage/dashboard.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'controller/auth_controller.dart';

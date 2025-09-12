@@ -1,4 +1,4 @@
-# labmino_app
+# runsight_app
 
 A new Flutter project.
 
