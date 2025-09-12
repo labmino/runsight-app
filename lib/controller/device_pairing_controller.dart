@@ -1,14 +1,17 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import '../app_module/data/model/pairing_session.dart';
+
 import '../app_module/data/model/device.dart';
+import '../app_module/data/model/pairing_session.dart';
 
 class DevicePairingController extends ChangeNotifier {
   PairingSession? _currentSession;
   Device? _pairedDevice;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _pairingSuccessful = false;
   final CookieRequest request;
   static const String baseUrl = 'http://34.101.37.162/api/v1';
 
@@ -19,10 +22,12 @@ class DevicePairingController extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get hasPairedDevice => _pairedDevice != null;
+  bool get pairingSuccessful => _pairingSuccessful;
 
   Future<PairingResponse?> requestPairingCode() async {
     _isLoading = true;
     _errorMessage = null;
+    _pairingSuccessful = false;
     notifyListeners();
 
     try {
@@ -80,7 +85,7 @@ class DevicePairingController extends ChangeNotifier {
         _errorMessage = null;
         _isLoading = false;
         notifyListeners();
-        return null; 
+        return null;
       } else {
         print('DEBUG: Failed response');
         _errorMessage = response['message'] ?? 'Failed to request pairing code';
@@ -119,6 +124,7 @@ class DevicePairingController extends ChangeNotifier {
               createdAt: DateTime.now(),
               updatedAt: DateTime.now(),
             );
+            _pairingSuccessful = true;
             _currentSession = null;
           }
         }
@@ -258,6 +264,7 @@ class DevicePairingController extends ChangeNotifier {
 
   void clearSession() {
     _currentSession = null;
+    _pairingSuccessful = false;
     notifyListeners();
   }
 }

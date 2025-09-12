@@ -1,6 +1,8 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../../controller/device_pairing_controller.dart';
 import '../run/setup_run_page.dart';
 
@@ -132,8 +134,15 @@ class _PairingCodePageState extends State<PairingCodePage> {
         child: SafeArea(
           child: Consumer<DevicePairingController>(
             builder: (context, controller, child) {
-              if (controller.currentSession == null) {
+              if (controller.currentSession == null &&
+                  !controller.pairingSuccessful) {
                 return _buildError("No pairing session found");
+              }
+
+              // If pairing successful but session is null, show success state
+              if (controller.currentSession == null &&
+                  controller.pairingSuccessful) {
+                return _buildSuccessState();
               }
 
               return Padding(
@@ -152,7 +161,9 @@ class _PairingCodePageState extends State<PairingCodePage> {
                             const SizedBox(height: 24),
                             _buildInstructions(),
                             const SizedBox(height: 24),
-                            _buildPairingCode(controller.currentSession!.code),
+                            _buildPairingCode(
+                              controller.currentSession?.code ?? '',
+                            ),
                             const SizedBox(height: 24),
                             _buildCountdown(),
                             const SizedBox(height: 32),
@@ -343,6 +354,38 @@ class _PairingCodePageState extends State<PairingCodePage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.check_circle, color: Colors.green, size: 64),
+          const SizedBox(height: 16),
+          const Text(
+            'Device Connected Successfully!',
+            style: TextStyle(fontSize: 18, color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Redirecting to setup...',
+            style: TextStyle(fontSize: 14, color: Color(0xff888b94)),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          const SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(
+              strokeWidth: 3,
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xff3abeff)),
+            ),
+          ),
+        ],
       ),
     );
   }
