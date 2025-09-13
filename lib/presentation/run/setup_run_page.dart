@@ -17,7 +17,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0x193abeff),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -72,7 +72,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
             style: const TextStyle(
               decoration: TextDecoration.none,
               fontSize: 28,
-              color: Color(0x193abeff),
+              color: Colors.white,
               fontWeight: FontWeight.w600,
             ),
             maxLines: 1,
@@ -93,7 +93,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 18,
-            color: Color(0x193abeff),
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -157,7 +157,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
                         fontSize: 16,
                         color: isSelected
                             ? const Color(0xff3abeff)
-                            : const Color(0x193abeff),
+                            : Colors.white,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -198,7 +198,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
           style: TextStyle(
             decoration: TextDecoration.none,
             fontSize: 18,
-            color: Color(0x193abeff),
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -247,7 +247,7 @@ class _SetupRunPageState extends State<SetupRunPage> {
                     style: const TextStyle(
                       decoration: TextDecoration.none,
                       fontSize: 16,
-                      color: Color(0x193abeff),
+                      color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
