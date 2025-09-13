@@ -61,8 +61,8 @@ RunSight is a smart running assistance system consisting of a Flutter mobile app
 1. Clone the repo
 
 ```bash
-git clone https://github.com/labmino/labmino_app.git
-cd labmino_app
+git clone https://github.com/labmino/runsight_app.git
+cd runsight_app
 ```
 
 2. Install dependencies
