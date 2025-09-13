@@ -11,7 +11,6 @@ A smart running assistant Flutter mobile app with AI powered voice guidance and 
 
 - [About](#about)
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Getting Started](#getting-started)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -19,26 +18,31 @@ A smart running assistant Flutter mobile app with AI powered voice guidance and 
 - [Technologies](#technologies)
 - [Contributing](#contributing)
 - [License](#license)
-- [Contact](#contact)
 
 ---
 
 ## About
 
-RunSight is a cross-platform mobile application built with Flutter, focusing on enhancing running experiences with AI-powered voice guidance, real-time route tracking, and performance analytics. It leverages Flutter’s fast rendering engine to deliver smooth animations and responsive UI.
+RunSight is a smart running assistance system consisting of a Flutter mobile app that pairs with IoT smart glasses for AI-powered running guidance. The system features autonomous IoT devices that provide real-time voice navigation and obstacle detection, while the mobile app serves as a companion for viewing run history, statistics, and device management. The architecture follows an offline-first approach where runs are processed locally on the IoT device and synced to the backend when connectivity is available.
 
 ---
 
 ## Features
 
+### Mobile App
 - Cross-platform support (iOS & Android)
-- AI-powered voice guidance using Text-to-Speech
-- Real-time route tracking with maps integration
-- Performance analytics with charts and statistics
-- Image capture for run photos
-- User authentication and data synchronization
-- Responsive and adaptive UI with custom fonts (Poppins)
-- Offline mode support for core features
+- Device pairing with IoT smart glasses via 6-digit codes
+- Run history and performance analytics with charts
+- Real-time device status monitoring (battery, sync status)
+- User authentication and profile management
+- Responsive UI with custom fonts (Poppins)
+
+### IoT Integration
+- Autonomous running sessions on smart glasses
+- AI-powered obstacle detection and voice guidance
+- Local data processing with offline-first architecture
+- Automatic data synchronization when connected
+- Real-time telemetry and frame processing
 
 ---
 
@@ -90,13 +94,26 @@ After launching the app, you can:
 
 ## Architecture
 
-This project follows a modular architectural pattern using:
+RunSight follows a distributed architecture with three main components:
 
+### System Components
+- **IoT Smart Glasses**: Autonomous devices running local AI models for real-time obstacle detection and voice guidance
+- **Mobile App**: Flutter companion app for device management, run history, and analytics
+- **Backend API**: RESTful service (http://localhost:8080/api/v1) handling authentication, device pairing, and data synchronization
+- **Database**: PostgreSQL for storing user data, device information, and run metrics
+
+### Mobile App Architecture
 * `Get` for state management and routing
 * `Provider` for additional state management
 * `Get_it` for dependency injection
 * `pbp_django_auth` for backend authentication
 * Modular codebase with separate modules for controllers, presentation, and widgets
+
+### Core Principles
+- **IoT Autonomy**: Runs start/stop on device; mobile app not required for sessions
+- **Offline-First**: IoT devices store runs locally and sync when network available
+- **Stateless Backend**: No persistent server-side sessions
+- **Mobile View-Only**: App primarily reads history and manages devices
 
 ---
 
