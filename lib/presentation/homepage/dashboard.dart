@@ -123,33 +123,35 @@ class _DashboardPageState extends State<DashboardPage> {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(color: const Color(0xff1b1f3b)),
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 24),
-                      _buildYesterdayRunCard(),
-                      const SizedBox(height: 24),
-                      _buildWeeklyGoalCard(),
-                      const SizedBox(height: 24),
-                      _buildStartRunButton(),
-                      const SizedBox(height: 40),
-                    ],
+        child: SafeArea(
+          child: Column(
+            children: [
+              _buildHeader(),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 24),
+                        _buildYesterdayRunCard(),
+                        const SizedBox(height: 24),
+                        _buildWeeklyGoalCard(),
+                        const SizedBox(height: 24),
+                        _buildStartRunButton(),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
 
-            CustomBottomNavBar(
-              currentIndex: _currentNavIndex,
-              onTap: _onNavBarTap,
-            ),
-          ],
+              CustomBottomNavBar(
+                currentIndex: _currentNavIndex,
+                onTap: _onNavBarTap,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -159,7 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return SizedBox(
       width: double.infinity,
       child: Padding(
-        padding: const EdgeInsets.only(left: 24, top: 60, right: 24, bottom: 0),
+        padding: const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 0),
         child: Consumer<AuthController>(
           builder: (context, authController, child) {
             final user = authController.currentUser;
