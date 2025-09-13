@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Labmino',
+      title: 'RunSight',
       theme: ThemeData(useMaterial3: true),
       home: Consumer<AuthController>(
         builder: (context, authController, child) {

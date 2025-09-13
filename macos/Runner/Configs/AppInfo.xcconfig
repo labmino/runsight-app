@@ -8,7 +8,7 @@
 PRODUCT_NAME = runsight_app
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.example.labminoApp
+PRODUCT_BUNDLE_IDENTIFIER = com.example.runsightApp
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2025 com.example. All rights reserved.
